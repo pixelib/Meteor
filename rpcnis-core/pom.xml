@@ -29,7 +29,7 @@
 
         <dependency>
             <groupId>com.npcnis</groupId>
-            <artifactId>rpcnis-serializer</artifactId>
+            <artifactId>rpcnis-base</artifactId>
             <version>${rpcnis-serializer.version}</version>
         </dependency>
     </dependencies>
