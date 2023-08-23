@@ -8,11 +8,15 @@
     <artifactId>rpcnis-core</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <parent>
+        <groupId>com.rpcnis</groupId>
+        <artifactId>rpcnis-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.plugin.validation>verbose</maven.plugin.validation>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <rpcnis-serializer.version>${revision}</rpcnis-serializer.version>
     </properties>
 
     <dependencies>
@@ -20,14 +24,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.npcnis</groupId>
             <artifactId>rpcnis-serializer</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${rpcnis-serializer.version}</version>
         </dependency>
     </dependencies>
 
