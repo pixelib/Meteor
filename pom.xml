@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>serializer/</module>
+        <module>rpcnis-serializer/</module>
         <module>rpcnis-core/</module>
     </modules>
 
