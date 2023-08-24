@@ -89,6 +89,11 @@ public class ReflectionUtil {
     public static Object[] overflowArguments(Method method, Object[] allArguments) {
         Object[] output = new Object[method.getParameterCount()];
 
+        // is it an empty array? if so, return an empty array
+        if (allArguments.length == 0) {
+            return output;
+        }
+
         for (int i = 0; i < method.getParameterCount() - 1; i++) {
             output[i] = allArguments[i];
         }

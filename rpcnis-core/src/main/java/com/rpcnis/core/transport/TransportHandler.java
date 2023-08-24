@@ -5,8 +5,10 @@ import com.rpcnis.base.RpcTransport;
 import com.rpcnis.base.enums.Direction;
 import com.rpcnis.base.enums.ReadStatus;
 import com.rpcnis.core.executor.ImplementationWrapper;
+import com.rpcnis.core.trackers.OutgoingInvocationTracker;
 import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.trackers.IncomingInvocationTracker;
+import com.rpcnis.core.transport.packets.InvocationResponse;
 
 import java.util.Collection;
 
@@ -14,14 +16,23 @@ public class TransportHandler {
 
     private final RpcSerializer serializer;
     private final RpcTransport transport;
-    private IncomingInvocationTracker incomingInvocationTracker;
+    private final IncomingInvocationTracker incomingInvocationTracker;
+    private final OutgoingInvocationTracker outgoingInvocationTracker;
 
-    public TransportHandler(RpcSerializer serializer, RpcTransport transport, IncomingInvocationTracker incomingInvocationTracker) {
+    public TransportHandler(RpcSerializer serializer, RpcTransport transport, IncomingInvocationTracker incomingInvocationTracker, OutgoingInvocationTracker outgoingInvocationTracker) {
         this.serializer = serializer;
         this.transport = transport;
         this.incomingInvocationTracker = incomingInvocationTracker;
+        this.outgoingInvocationTracker = outgoingInvocationTracker;
 
+        transport.subscribe(Direction.METHOD_PROXY, this::handleInvocationResponse);
         transport.subscribe(Direction.IMPLEMENTATION, this::handleInvocationRequest);
+    }
+
+    private ReadStatus handleInvocationResponse(byte[] bytes) throws ClassNotFoundException {
+        InvocationResponse invocationResponse = InvocationResponse.fromBytes(bytes, serializer);
+        outgoingInvocationTracker.completeInvocation(invocationResponse);
+        return ReadStatus.HANDLED;
     }
 
     private ReadStatus handleInvocationRequest(byte[] bytes) throws ClassNotFoundException {
@@ -37,7 +48,7 @@ public class TransportHandler {
         }
 
         // if there is an invocation handler, call it
-        Object response;
+        Object response = null;
         for (ImplementationWrapper implementation : implementations) {
             try {
                 response = implementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
@@ -49,6 +60,8 @@ public class TransportHandler {
         }
 
         // transmit response
+        InvocationResponse invocationResponse = new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), response);
+        transport.send(Direction.METHOD_PROXY, invocationResponse.toBytes(serializer));
 
         return ReadStatus.HANDLED;
     }

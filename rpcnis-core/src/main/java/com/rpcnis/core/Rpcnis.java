@@ -35,7 +35,7 @@ public class Rpcnis {
 
         outgoingInvocationTracker = new OutgoingInvocationTracker(transport, serializer, options, timer);
         incomingInvocationTracker = new IncomingInvocationTracker();
-        transportHandler = new TransportHandler(serializer, transport, incomingInvocationTracker);
+        transportHandler = new TransportHandler(serializer, transport, incomingInvocationTracker, outgoingInvocationTracker);
     }
 
     /**

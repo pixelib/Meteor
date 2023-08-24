@@ -6,7 +6,9 @@ import com.rpcnis.base.RpcTransport;
 import com.rpcnis.base.enums.Direction;
 import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.proxy.PendingInvocation;
+import com.rpcnis.core.transport.packets.InvocationResponse;
 
+import java.util.Set;
 import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
@@ -49,17 +51,17 @@ public class OutgoingInvocationTracker {
         }
     }
 
-    public void completeInvocation(InvocationDescriptor invocationDescriptor, Object value) {
+    public void completeInvocation(InvocationResponse invocationResponse) {
         // do we have a pending invocation for this invocation id?
-        PendingInvocation<?> pendingInvocation = pendingInvocations.get(invocationDescriptor.getUniqueInvocationId());
+        PendingInvocation<?> pendingInvocation = pendingInvocations.get(invocationResponse.getInvocationId());
         if (pendingInvocation == null) {
-            throw new IllegalStateException("No pending invocation found for invocation id " + invocationDescriptor.getUniqueInvocationId());
+            throw new IllegalStateException("No pending invocation found for invocation id " + invocationResponse.getInvocationId());
         }
 
-        pendingInvocation.complete(value);
+        pendingInvocation.complete(invocationResponse.getResult());
 
         // remove the pending invocation from the map
-        pendingInvocations.remove(invocationDescriptor.getUniqueInvocationId());
+        pendingInvocations.remove(invocationResponse.getInvocationId());
     }
 
 }

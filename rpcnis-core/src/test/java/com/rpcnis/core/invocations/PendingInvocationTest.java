@@ -6,6 +6,7 @@ import com.rpcnis.base.defaults.LoopbackTransport;
 import com.rpcnis.base.errors.InvocationTimedOutException;
 import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.trackers.OutgoingInvocationTracker;
+import com.rpcnis.core.transport.packets.InvocationResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,9 @@ public class PendingInvocationTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            outgoingInvocationTracker.completeInvocation(invocationDescriptor, testString);
+            outgoingInvocationTracker.completeInvocation(
+                    new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), testString)
+            );
         });
 
         String response = outgoingInvocationTracker.invokeRemoteMethod(invocationDescriptor);

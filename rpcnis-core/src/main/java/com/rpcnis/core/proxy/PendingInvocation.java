@@ -2,6 +2,7 @@ package com.rpcnis.core.proxy;
 
 import com.rpcnis.base.errors.InvocationTimedOutException;
 import com.rpcnis.core.transport.packets.InvocationDescriptor;
+import com.rpcnis.core.utils.ReflectionUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,9 +51,18 @@ public class PendingInvocation<T> extends TimerTask {
             throw new IllegalStateException("Cannot complete invocation twice.");
         }
 
+        boolean isVoidOrNullable = invocationDescriptor.getReturnType().equals(Void.TYPE) || !invocationDescriptor.getReturnType().isPrimitive();
+
         // check instance of response
-        if (!invocationDescriptor.getReturnType().isInstance(response)) {
-            throw new IllegalStateException("Response is not an instance of the expected return type.");
+        if (!isVoidOrNullable && !invocationDescriptor.getReturnType().isInstance(response)) {
+            // is the normal return type primitive? then check if its still assignable as a boxed
+            if (invocationDescriptor.getReturnType().isPrimitive()) {
+                if (!ReflectionUtil.ensureBoxedClass(invocationDescriptor.getReturnType()).isAssignableFrom(response.getClass())) {
+                    throw new IllegalStateException("Response is not an instance of the expected return type. " +
+                            "Expected: " + invocationDescriptor.getReturnType().getName() + ", " +
+                            "Actual: " + response.getClass().getName());
+                }
+            }
         }
 
         isComplete.set(true);
