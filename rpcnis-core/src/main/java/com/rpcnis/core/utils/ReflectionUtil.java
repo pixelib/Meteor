@@ -57,6 +57,28 @@ public class ReflectionUtil {
         }
     }
 
+    public static Object toPrimitiveValue(Object input) {
+        if (input instanceof Boolean) {
+            return ((Boolean) input).booleanValue();
+        } else if (input instanceof Byte) {
+            return ((Byte) input).byteValue();
+        } else if (input instanceof Character) {
+            return ((Character) input).charValue();
+        } else if (input instanceof Double) {
+            return ((Double) input).doubleValue();
+        } else if (input instanceof Float) {
+            return ((Float) input).floatValue();
+        } else if (input instanceof Integer) {
+            return ((Integer) input).intValue();
+        } else if (input instanceof Long) {
+            return ((Long) input).longValue();
+        } else if (input instanceof Short) {
+            return ((Short) input).shortValue();
+        } else {
+            throw new RuntimeException("Cannot convert to primitive value");
+        }
+    }
+
     /**
      * Method arguments cannot be mapped one-to-one to an invocation, because the actual signatures
      * may differ from the declared signatures (this can happen with optional arrays, for example).
@@ -67,51 +89,44 @@ public class ReflectionUtil {
     public static Object[] overflowArguments(Method method, Object[] allArguments) {
         Object[] output = new Object[method.getParameterCount()];
 
-        // map all arguments except the last one
-        if (method.getParameterCount() - 1 >= 0)
-            System.arraycopy(allArguments, 0, output, 0, method.getParameterCount() - 1);
+        for (int i = 0; i < method.getParameterCount() - 1; i++) {
+            output[i] = allArguments[i];
+        }
 
-        // map the last argument as an array
         Class<?> lastParameterType = method.getParameterTypes()[method.getParameterCount() - 1];
         if (lastParameterType.isArray()) {
-            // create an array of the correct type
-            int length = allArguments.length - method.getParameterCount() + 1;
             Class<?> componentType = lastParameterType.getComponentType();
 
-            if (componentType.isPrimitive() && componentType == int.class) {
-                int[] primitiveArray = new int[length];
-                for (int i = 0; i < length; i++) {
-                    Object argument = allArguments[method.getParameterCount() - 1 + i];
-                    if (argument instanceof Integer) {
-                        primitiveArray[i] = ((Integer) argument).intValue();
+            int length = allArguments.length - method.getParameterCount() + 1;
+            Object array = Array.newInstance(componentType, length);
+
+            for (int i = 0; i < length; i++) {
+                Object argument = allArguments[method.getParameterCount() - 1 + i];
+                if (componentType.isPrimitive()) {
+                    Class<?> wrapperType = PRIMITIVE_TO_BOXED.get(componentType);
+                    if (wrapperType.isInstance(argument)) {
+                        Array.set(array, i, argument);
                     } else {
-                        throw new RuntimeException("Argument type mismatch");
+                        // ignore nulls, they are fine
+                        if (argument != null)
+                            throw new RuntimeException("Argument type mismatch. " + wrapperType + " expected, got " + argument.getClass() + " instead.");
                     }
+                } else {
+                    Array.set(array, i, argument);
                 }
-                output[output.length - 1] = primitiveArray;
-            } else {
-                // Handle non-primitive array case
-                Object array = Array.newInstance(componentType, length);
-
-                // fill the array with the remaining arguments
-                if (allArguments.length - (method.getParameterCount() - 1) >= 0)
-                    System.arraycopy(allArguments, method.getParameterCount() - 1, array, 0, allArguments.length - (method.getParameterCount() - 1));
-
-                // set the array as the last argument
-                output[output.length - 1] = array;
             }
+
+            output[output.length - 1] = array;
         } else {
-            // set the last argument as-is
             output[output.length - 1] = allArguments[allArguments.length - 1];
         }
 
-        // sanity check; is the output array the same length as the method's parameter count?
-        if (output.length != method.getParameterCount())
+        if (output.length != method.getParameterCount()) {
             throw new RuntimeException("Overflowing arguments failed! Expected " + method.getParameterCount() + " arguments, got " + output.length + " arguments.");
+        }
 
         return output;
     }
-
 
 
 }
