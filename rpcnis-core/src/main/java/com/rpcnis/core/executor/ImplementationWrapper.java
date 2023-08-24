@@ -21,10 +21,16 @@ public class ImplementationWrapper {
         String methodName = invocationDescriptor.getMethodName();
         Class<?>[] argTypes = invocationDescriptor.getArgTypes();
 
-        Method method = findCompatibleDespiteSignature(implementation.getClass().getDeclaredMethods(), methodName, argTypes);
+        Method method;
+        try {
+            method = implementation.getClass().getDeclaredMethod(methodName, argTypes);
+        } catch (NoSuchMethodException e) {
+            // if the method is not found, try to find a method that is compatible despite signature
+            method = findCompatibleDespiteSignature(implementation.getClass().getDeclaredMethods(), methodName, argTypes);
 
-        if (method == null) {
-            throw new NoSuchMethodException("No method found with name " + methodName + " and compatible arguments");
+            if (method == null) {
+                throw new NoSuchMethodException("No method found with name " + methodName + " and compatible arguments");
+            }
         }
 
         // make accessible if private
@@ -41,6 +47,15 @@ public class ImplementationWrapper {
         }
     }
 
+    /**
+     * We don't now yet which method is a best match, because there are multiple ways to arrange the arguments.
+     * so this method serves to find the best match for when a normal match cannot be done.
+     * this can get pretty computationally expensive, so this should only be done when an initial lookup fails.
+     * @param methods   The methods to search through
+     * @param methodName The name of the method to find
+     * @param argTypes  The argument types of the method to find
+     * @return The method if found, null otherwise
+     */
     private Method findCompatibleDespiteSignature(Method[] methods, String methodName, Class<?>[] argTypes) {
         for (Method method : methods) {
             if (method.getName().equals(methodName) && argTypes.length >= method.getParameterCount()) {

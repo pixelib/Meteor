@@ -29,7 +29,7 @@ public class ArgumentTransformerTest {
         Method method = getMethod("aMethodWithOneArrayArgument");
         Object[] arguments = new Object[]{1, 2, 3, 4, 5};
         Object[] transformedArguments = ReflectionUtil.overflowArguments(method, arguments);
-        assertArrayEquals(new Object[][]{{1, 2, 3, 4, 5}}, transformedArguments);
+        assertArrayEquals(new int[][]{{1, 2, 3, 4, 5}}, transformedArguments);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class ArgumentTransformerTest {
         Method method = getMethod("aMethodWithAnOptionalArrayArgument");
         Object[] arguments = new Object[]{1, 2, 3, 4, 5};
         Object[] transformedArguments = ReflectionUtil.overflowArguments(method, arguments);
-        assertArrayEquals(new Object[]{1, new Object[]{2, 3, 4, 5}}, transformedArguments);
+        assertArrayEquals(new Object[]{1, new int[]{2, 3, 4, 5}}, transformedArguments);
     }
 
     private Method getMethod(String name) {
