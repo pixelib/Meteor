@@ -1,6 +1,7 @@
 package com.rpcnis.transport.redis;
 
 import com.rpcnis.base.enums.ReadStatus;
+import com.rpcnis.base.interfaces.SubscriptionHandler;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.Collection;
@@ -13,18 +14,18 @@ public class RedisPacketListener extends JedisPubSub {
 
     private final ExecutorService jedisThreadPool = Executors.newCachedThreadPool();
 
-    private final Function<byte[], ReadStatus> messageBroker;
+    private final SubscriptionHandler messageBroker;
 
     private final Collection<String> customSubscribedChannels = ConcurrentHashMap.newKeySet();
 
-    public RedisPacketListener(Function<byte[], ReadStatus> messageBroker, String startChannel) {
+    public RedisPacketListener(SubscriptionHandler messageBroker, String startChannel) {
         this.messageBroker = messageBroker;
         customSubscribedChannels.add(startChannel);
     }
 
     @Override
     public void onMessage(String channel, String message) {
-        jedisThreadPool.submit(() -> messageBroker.apply(message.getBytes()));
+        jedisThreadPool.submit(() -> messageBroker.onPacket(message.getBytes()));
     }
 
     @Override

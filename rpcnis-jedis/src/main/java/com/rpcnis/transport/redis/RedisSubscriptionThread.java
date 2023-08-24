@@ -1,6 +1,6 @@
 package com.rpcnis.transport.redis;
 
-import com.rpcnis.base.enums.ReadStatus;
+import com.rpcnis.base.interfaces.SubscriptionHandler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -8,20 +8,19 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RedisSubscriptionThread {
 
-    private final Function<byte[], ReadStatus> messageBroker;
+    private final SubscriptionHandler messageBroker;
     private final Logger logger;
     private final String defaultChannel;
     private final JedisPool jedisPool;
 
     private final ExecutorService pool = Executors.newSingleThreadExecutor(r -> new Thread(r, "rpcnis-redis-listener-thread"));
 
-    public RedisSubscriptionThread(Function<byte[], ReadStatus> messageBroker, Logger logger, String channel, JedisPool jedisPool) {
+    public RedisSubscriptionThread(SubscriptionHandler messageBroker, Logger logger, String channel, JedisPool jedisPool) {
         this.messageBroker = messageBroker;
         this.logger = logger;
         this.defaultChannel = channel;

@@ -3,6 +3,7 @@ package com.rpcnis.transport.redis;
 import com.rpcnis.base.RpcTransport;
 import com.rpcnis.base.enums.Direction;
 import com.rpcnis.base.enums.ReadStatus;
+import com.rpcnis.base.interfaces.SubscriptionHandler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -46,7 +47,7 @@ public class RedisTransport implements RpcTransport {
     }
 
     @Override
-    public void subscribe(Direction direction, Function<byte[], ReadStatus> onReceive) {
+    public void subscribe(Direction direction, SubscriptionHandler onReceive) {
         RedisSubscriptionThread subscriptionThread = new RedisSubscriptionThread(onReceive, logger, getTopicName(direction), jedisPool);
         redisSubscriptionThreads.add(subscriptionThread);
 
