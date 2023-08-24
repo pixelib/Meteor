@@ -12,6 +12,12 @@ public class SendingUpdateMethod {
         MathFunctions mathFunctions = rpcNis.registerProcedure(MathFunctions.class);
         MathFunctions mathFunctions2 = rpcNis.registerProcedure(MathFunctions.class, "Cooler-math-functions");
 
+        // register an implementation, invocations will be dispatched to this object.
+        // implementations will be registered under all interfaces they implement
+        rpcNis.registerImplementation(new MathFunctionsImpl());
+
+        // you can also register an implementation under a specific namespace
+        rpcNis.registerImplementation(new MathFunctionsImpl(), "Cooler-math-functions");
 
 
         int result = mathFunctions.add(1, 2, 3, 4, 5);
@@ -24,7 +30,7 @@ public class SendingUpdateMethod {
         int substract(int from, int... numbers);
     }
 
-    public class MathFunctionsImpl implements MathFunctions {
+    public static class MathFunctionsImpl implements MathFunctions {
 
         @Override
         public int multiply(int x, int times) {
