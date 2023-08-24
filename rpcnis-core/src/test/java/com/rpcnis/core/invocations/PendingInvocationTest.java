@@ -1,4 +1,4 @@
-package com.npcnis.cor.invocations;
+package com.rpcnis.core.invocations;
 
 import com.rpcnis.base.defaults.LoopbackTransport;
 import com.rpcnis.base.errors.InvocationTimedOutException;
@@ -51,7 +51,7 @@ public class PendingInvocationTest {
     }
 
     @Test
-    @Timeout(10) // seconds
+    @Timeout(3) // seconds
     public void testTimeout() {
         // base instance
         Rpcnis rpcnis = new Rpcnis(new LoopbackTransport());

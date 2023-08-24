@@ -9,8 +9,8 @@ public class SendingUpdateMethod {
 
     public static void main(String[] args) {
         Rpcnis rpcNis = new Rpcnis(new LoopbackTransport());
-        MathFunctions mathFunctions = rpcNis.registerProcedures(MathFunctions.class);
-        MathFunctions mathFunctions2 = rpcNis.registerProcedures(MathFunctions.class, "Cooler-math-functions");
+        MathFunctions mathFunctions = rpcNis.registerProcedure(MathFunctions.class);
+        MathFunctions mathFunctions2 = rpcNis.registerProcedure(MathFunctions.class, "Cooler-math-functions");
 
 
         int result = mathFunctions.add(1, 2, 3, 4, 5);

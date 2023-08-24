@@ -4,10 +4,13 @@ import com.rpcnis.base.RpcOptions;
 import com.rpcnis.base.RpcSerializer;
 import com.rpcnis.base.RpcTransport;
 import com.rpcnis.base.defaults.GsonSerializer;
-import com.rpcnis.base.errors.InvocationTimedOutException;
 import com.rpcnis.core.models.InvocationDescriptor;
 import com.rpcnis.core.proxy.PendingInvocation;
+import com.rpcnis.core.proxy.ProxyInvocHandler;
+import com.rpcnis.core.proxy.RpcnisMock;
 
+import java.lang.reflect.Proxy;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
@@ -99,5 +102,25 @@ public class Rpcnis {
 
     public Timer getTimer() {
         return timer;
+    }
+
+    public <T> T registerProcedure(Class<T> procedure) {
+        return registerProcedure(procedure,procedure.getSimpleName().toLowerCase(Locale.ROOT));
+    }
+
+    public <T> T registerProcedure(Class<T> procedure, String name) {
+        if (!procedure.isInterface()) {
+            throw new IllegalArgumentException("Procedure must be an interface");
+        }
+
+        return procedure.cast(Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{procedure, RpcnisMock.class}, new ProxyInvocHandler(this,name)));
+    }
+
+    public static boolean isRpc(Object target) {
+        return Proxy.isProxyClass(target.getClass());
+    }
+
+    public static boolean isRpcnis(Object target) {
+        return target instanceof RpcnisMock;
     }
 }
