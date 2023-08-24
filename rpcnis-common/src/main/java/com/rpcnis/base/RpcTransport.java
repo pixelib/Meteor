@@ -2,6 +2,7 @@ package com.rpcnis.base;
 
 import com.rpcnis.base.enums.Direction;
 import com.rpcnis.base.enums.ReadStatus;
+import com.rpcnis.base.interfaces.SubscriptionHandler;
 
 import java.io.Closeable;
 import java.util.function.Function;
@@ -23,5 +24,5 @@ public interface RpcTransport extends Closeable {
      *                  if the packet was not handled, the transport implementation should continue processing the packet.
      *                  the transport implementation should call the onReceive function, regardless of the ReadStatus.
      */
-    void subscribe(Direction target, Function<byte[], ReadStatus> onReceive);
+    void subscribe(Direction target, SubscriptionHandler onReceive);
 }
