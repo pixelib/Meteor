@@ -13,6 +13,7 @@
         <module>rpcnis-common</module>
         <module>rpcnis-core</module>
         <module>examples</module>
+        <module>rpcnis-jedis</module>
     </modules>
 
     <properties>
@@ -28,6 +29,12 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>5.10.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>4.4.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

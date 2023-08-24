@@ -6,7 +6,6 @@ import com.rpcnis.base.enums.ReadStatus;
 import com.rpcnis.core.executor.ImplementationWrapper;
 import com.rpcnis.core.models.InvocationDescriptor;
 import com.rpcnis.core.trackers.IncomingInvocationTracker;
-import com.rpcnis.core.transport.packets.InvocationPacket;
 
 import java.util.Collection;
 
@@ -21,7 +20,7 @@ public class TransportHandler {
         this.transport = transport;
         this.incomingInvocationTracker = incomingInvocationTracker;
 
-        transport.onReceive(this::onReceive);
+        transport.subscribe(this::onReceive);
     }
 
     private ReadStatus onReceive(byte[] bytes) {
