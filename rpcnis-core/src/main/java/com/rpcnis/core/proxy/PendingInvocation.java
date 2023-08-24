@@ -20,13 +20,14 @@ public class PendingInvocation<T> extends TimerTask {
     private final InvocationDescriptor invocationDescriptor;
 
     // A callback to be called when the invocation times out. Used to mitigate the risk of memory leaks.
-    private Runnable timeoutCallback;
+    private final Runnable timeoutCallback;
 
-    private AtomicBoolean isComplete = new AtomicBoolean(false);
-    private AtomicBoolean isTimedOut = new AtomicBoolean(false);
+    private final AtomicBoolean isComplete = new AtomicBoolean(false);
+    private final AtomicBoolean isTimedOut = new AtomicBoolean(false);
 
     public PendingInvocation(Rpcnis rpcnis, InvocationDescriptor invocationDescriptor, Runnable timeoutCallback) {
         this.invocationDescriptor = invocationDescriptor;
+        this.timeoutCallback = timeoutCallback;
         this.timeoutSeconds = rpcnis.getOptions().getTimeoutSeconds();
         completable = new CompletableFuture<>();
 
@@ -34,7 +35,12 @@ public class PendingInvocation<T> extends TimerTask {
         rpcnis.getTimer().schedule(this, timeoutSeconds * 1000L);
     }
 
-    public void complete(T response) {
+    /**
+     * Complete and clean a pending invocation. This method should only be called once.
+     * This should be directly invoked from the transport when a response is received and deserialized.
+     * @param response The response to complete the invocation with.
+     */
+    public void complete(T response) throws IllegalStateException {
         if (isTimedOut.get()) {
             throw new IllegalStateException("Cannot complete invocation after timeout.");
         }
