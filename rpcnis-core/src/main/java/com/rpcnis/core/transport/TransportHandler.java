@@ -4,6 +4,7 @@ import com.rpcnis.base.RpcSerializer;
 import com.rpcnis.base.RpcTransport;
 import com.rpcnis.base.enums.ReadStatus;
 import com.rpcnis.core.executor.ImplementationWrapper;
+import com.rpcnis.core.models.InvocationDescriptor;
 import com.rpcnis.core.trackers.IncomingInvocationTracker;
 import com.rpcnis.core.transport.packets.InvocationPacket;
 
@@ -25,7 +26,7 @@ public class TransportHandler {
 
     private ReadStatus onReceive(byte[] bytes) {
         // deserialize the packet
-        InvocationPacket packet = serializer.deserialize(bytes, InvocationPacket.class);
+        InvocationDescriptor invocationDescriptor = serializer.deserialize(bytes, InvocationDescriptor.class);
 
         // get the invocation handler for this packet
         Collection<ImplementationWrapper> implementations = incomingInvocationTracker.getImplementations().get(packet.getProcedure());

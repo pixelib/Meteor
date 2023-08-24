@@ -23,5 +23,5 @@ public interface RpcTransport extends Closeable {
      *                  if the packet was not handled, the transport implementation should continue processing the packet.
      *                  the transport implementation should call the onReceive function, regardless of the ReadStatus.
      */
-    void onReceive(Function<byte[], ReadStatus> onReceive);
+    void onReceive(Direction target, Function<byte[], ReadStatus> onReceive);
 }
