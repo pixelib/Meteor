@@ -8,12 +8,25 @@ public class RpcOptions {
      */
     private int timeoutSeconds = 30;
 
+    /**
+     * Generated pseudoclass for proxies will be registered with this class loader.
+     */
+    private ClassLoader classLoader = RpcOptions.class.getClassLoader();
+
     public int getTimeoutSeconds() {
         return timeoutSeconds;
     }
 
     public void setTimeoutSeconds(int timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
 }
