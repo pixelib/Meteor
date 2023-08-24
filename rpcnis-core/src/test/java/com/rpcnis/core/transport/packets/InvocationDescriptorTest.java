@@ -2,7 +2,7 @@ package com.rpcnis.core.transport.packets;
 
 import com.rpcnis.base.RpcSerializer;
 import com.rpcnis.base.defaults.GsonSerializer;
-import com.rpcnis.core.utils.ArgumentTransformer;
+import com.rpcnis.core.utils.ReflectionUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,10 +19,10 @@ class InvocationDescriptorTest {
 
         assertEquals(a.getArgTypes().length, b.getArgTypes().length);
         for (int i = 0; i < a.getArgTypes().length; i++) {
-            assertEquals(ArgumentTransformer.getBoxedClass(a.getArgTypes()[i]), b.getArgTypes()[i]);
+            assertEquals(ReflectionUtil.ensureBoxedClass(a.getArgTypes()[i]), b.getArgTypes()[i]);
         }
 
-        assertEquals(ArgumentTransformer.getBoxedClass(a.getReturnType()), b.getReturnType());
+        assertEquals(ReflectionUtil.ensureBoxedClass(a.getReturnType()), b.getReturnType());
     }
 
     @Test

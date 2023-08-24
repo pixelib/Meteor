@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class ArgumentTransformer {
+public class ReflectionUtil {
 
     /**
      * Map of primitive classes to their boxed counterparts.
@@ -23,8 +23,38 @@ public class ArgumentTransformer {
             void.class, Void.class
     );
 
-    public static Class<?> getBoxedClass(Class<?> primitiveClass) {
+    public static Class<?> ensureBoxedClass(Class<?> primitiveClass) {
         return PRIMITIVE_TO_BOXED.getOrDefault(primitiveClass, primitiveClass);
+    }
+
+    public static Class<?> resolvePrimitive(final String className) {
+        switch (className) {
+            case "boolean":
+                return boolean.class;
+            case "byte":
+                return byte.class;
+            case "short":
+                return short.class;
+            case "int":
+                return int.class;
+            case "long":
+                return long.class;
+            case "float":
+                return float.class;
+            case "double":
+                return double.class;
+            case "char":
+                return char.class;
+            case "void":
+                return void.class;
+            default:
+                String fqn = className.contains(".") ? className : "java.lang.".concat(className);
+                try {
+                    return Class.forName(fqn);
+                } catch (ClassNotFoundException ex) {
+                    throw new IllegalArgumentException("Class not found: " + fqn);
+                }
+        }
     }
 
     /**
@@ -46,16 +76,30 @@ public class ArgumentTransformer {
         if (lastParameterType.isArray()) {
             // create an array of the correct type
             int length = allArguments.length - method.getParameterCount() + 1;
-            Class<?> componentType = PRIMITIVE_TO_BOXED.getOrDefault(lastParameterType.getComponentType(), lastParameterType.getComponentType());
+            Class<?> componentType = lastParameterType.getComponentType();
 
-            Object[] array = (Object[]) Array.newInstance(componentType, length);
+            if (componentType.isPrimitive() && componentType == int.class) {
+                int[] primitiveArray = new int[length];
+                for (int i = 0; i < length; i++) {
+                    Object argument = allArguments[method.getParameterCount() - 1 + i];
+                    if (argument instanceof Integer) {
+                        primitiveArray[i] = ((Integer) argument).intValue();
+                    } else {
+                        throw new RuntimeException("Argument type mismatch");
+                    }
+                }
+                output[output.length - 1] = primitiveArray;
+            } else {
+                // Handle non-primitive array case
+                Object array = Array.newInstance(componentType, length);
 
-            // fill the array with the remaining arguments
-            if (allArguments.length - (method.getParameterCount() - 1) >= 0)
-                System.arraycopy(allArguments, method.getParameterCount() - 1, array, 0, allArguments.length - (method.getParameterCount() - 1));
+                // fill the array with the remaining arguments
+                if (allArguments.length - (method.getParameterCount() - 1) >= 0)
+                    System.arraycopy(allArguments, method.getParameterCount() - 1, array, 0, allArguments.length - (method.getParameterCount() - 1));
 
-            // set the array as the last argument
-            output[output.length - 1] = array;
+                // set the array as the last argument
+                output[output.length - 1] = array;
+            }
         } else {
             // set the last argument as-is
             output[output.length - 1] = allArguments[allArguments.length - 1];
@@ -67,6 +111,7 @@ public class ArgumentTransformer {
 
         return output;
     }
+
 
 
 }

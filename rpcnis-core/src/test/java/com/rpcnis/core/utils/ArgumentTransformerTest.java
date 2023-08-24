@@ -12,7 +12,7 @@ public class ArgumentTransformerTest {
     public void testExactMatch() {
         Method method = getMethod("aMethodWithThreeArguments");
         Object[] arguments = new Object[]{1, 2, 3};
-        Object[] transformedArguments = ArgumentTransformer.overflowArguments(method, arguments);
+        Object[] transformedArguments = ReflectionUtil.overflowArguments(method, arguments);
         assertArrayEquals(arguments, transformedArguments);
     }
 
@@ -20,7 +20,7 @@ public class ArgumentTransformerTest {
     public void testOverflow() {
         Method method = getMethod("aMethodWithThreeArguments");
         Object[] arguments = new Object[]{1, 2, 3};
-        Object[] transformedArguments = ArgumentTransformer.overflowArguments(method, arguments);
+        Object[] transformedArguments = ReflectionUtil.overflowArguments(method, arguments);
         assertArrayEquals(new Object[]{1, 2, 3}, transformedArguments);
     }
 
@@ -28,7 +28,7 @@ public class ArgumentTransformerTest {
     public void testOverflowWithArray() {
         Method method = getMethod("aMethodWithOneArrayArgument");
         Object[] arguments = new Object[]{1, 2, 3, 4, 5};
-        Object[] transformedArguments = ArgumentTransformer.overflowArguments(method, arguments);
+        Object[] transformedArguments = ReflectionUtil.overflowArguments(method, arguments);
         assertArrayEquals(new Object[][]{{1, 2, 3, 4, 5}}, transformedArguments);
     }
 
@@ -36,7 +36,7 @@ public class ArgumentTransformerTest {
     public void testOverflowWithOptionalArray() {
         Method method = getMethod("aMethodWithAnOptionalArrayArgument");
         Object[] arguments = new Object[]{1, 2, 3, 4, 5};
-        Object[] transformedArguments = ArgumentTransformer.overflowArguments(method, arguments);
+        Object[] transformedArguments = ReflectionUtil.overflowArguments(method, arguments);
         assertArrayEquals(new Object[]{1, new Object[]{2, 3, 4, 5}}, transformedArguments);
     }
 

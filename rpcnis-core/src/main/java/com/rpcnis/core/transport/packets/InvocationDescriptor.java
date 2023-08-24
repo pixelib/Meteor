@@ -1,7 +1,7 @@
 package com.rpcnis.core.transport.packets;
 
 import com.rpcnis.base.RpcSerializer;
-import com.rpcnis.core.utils.ArgumentTransformer;
+import com.rpcnis.core.utils.ReflectionUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -81,7 +81,7 @@ public class InvocationDescriptor {
         for (Object arg : args) {
             buffer.writeBoolean(arg != null);
             if (arg != null) {
-                Class<?> argClass = ArgumentTransformer.getBoxedClass(arg.getClass());
+                Class<?> argClass = arg.getClass();
                 String argClassName = argClass.getName();
                 buffer.writeInt(argClassName.length());
                 buffer.writeCharSequence(argClassName, Charset.defaultCharset());
@@ -94,14 +94,14 @@ public class InvocationDescriptor {
 
         buffer.writeInt(argTypes.length);
         for (Class<?> argType : argTypes) {
-            argType = ArgumentTransformer.getBoxedClass(argType);
+            buffer.writeBoolean(argType.isPrimitive());
             buffer.writeInt(argType.getName().length());
             buffer.writeCharSequence(argType.getName(), Charset.defaultCharset());
         }
 
-        Class<?> safeReturnType = ArgumentTransformer.getBoxedClass(returnType);
-        buffer.writeInt(safeReturnType.getName().length());
-        buffer.writeCharSequence(safeReturnType.getName(), Charset.defaultCharset());
+        buffer.writeBoolean(returnType.isPrimitive());
+        buffer.writeInt(returnType.getName().length());
+        buffer.writeCharSequence(returnType.getName(), Charset.defaultCharset());
         byte[] byteArray = new byte[buffer.readableBytes()];
         buffer.readBytes(byteArray);
         // release the buffer
@@ -135,12 +135,23 @@ public class InvocationDescriptor {
 
         Class<?>[] argTypes = new Class<?>[buffer.readInt()];
         for (int i = 0; i < argTypes.length; i++) {
+            boolean isPrimitive = buffer.readBoolean();
             String argTypeClassName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
-            argTypes[i] = Class.forName(argTypeClassName);
+            if (isPrimitive) {
+                argTypes[i] = ReflectionUtil.resolvePrimitive(argTypeClassName);
+            } else {
+                argTypes[i] = Class.forName(argTypeClassName);
+            }
         }
 
+        boolean isReturnPrimitive = buffer.readBoolean();
         String returnTypeName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
-        Class<?> returnType = Class.forName(returnTypeName);
+        Class<?> returnType;
+        if (isReturnPrimitive) {
+            returnType = ReflectionUtil.resolvePrimitive(returnTypeName);
+        } else {
+            returnType = Class.forName(returnTypeName);
+        }
 
         // release the buffer
         buffer.release();
