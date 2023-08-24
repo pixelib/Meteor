@@ -61,6 +61,8 @@ public class Rpcnis {
         // add the pending invocation to the map
         pendingInvocations.put(invocationDescriptor.getUniqueInvocationId(), pendingInvocation);
 
+        // TODO: transmit
+
         // wait for response or timeout
         return pendingInvocation.waitForResponse();
     }

@@ -6,6 +6,7 @@ import com.rpcnis.core.models.InvocationDescriptor;
 
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PendingInvocation<T> extends TimerTask {
@@ -32,7 +33,7 @@ public class PendingInvocation<T> extends TimerTask {
         completable = new CompletableFuture<>();
 
         // schedule timeout, timeoutSeconds is in seconds, Timer.schedule() takes milliseconds
-        rpcnis.getTimer().schedule(this, timeoutSeconds * 1000L);
+        rpcnis.getTimer().schedule(this, TimeUnit.SECONDS.toMillis(timeoutSeconds));
     }
 
     /**
@@ -70,7 +71,9 @@ public class PendingInvocation<T> extends TimerTask {
         }
 
         isTimedOut.set(true);
-        this.completable.completeExceptionally(new InvocationTimedOutException(invocationDescriptor.getMethodName(), invocationDescriptor.getTargetName(), timeoutSeconds));
+        this.completable.completeExceptionally(
+                new InvocationTimedOutException(invocationDescriptor.getMethodName(), invocationDescriptor.getTargetName(), timeoutSeconds)
+        );
 
         // call the timeout callback
         if (timeoutCallback != null) {
