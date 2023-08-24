@@ -10,6 +10,7 @@ import com.rpcnis.core.proxy.PendingInvocation;
 
 import java.util.Timer;
 import java.util.UUID;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Rpcnis {
@@ -51,7 +52,7 @@ public class Rpcnis {
         this(new RpcOptions(), new GsonSerializer(), transport);
     }
 
-    public <T> T invoke(InvocationDescriptor invocationDescriptor, Class<T> returnType) throws InvocationTimedOutException {
+    public <T> T invoke(InvocationDescriptor invocationDescriptor, Class<T> returnType) throws Throwable {
         // create a pending invocation
         PendingInvocation<T> pendingInvocation = new PendingInvocation<>(this, invocationDescriptor, () -> {
             // remove the pending invocation from the map
@@ -64,7 +65,11 @@ public class Rpcnis {
         // TODO: transmit
 
         // wait for response or timeout
-        return pendingInvocation.waitForResponse();
+        try {
+            return pendingInvocation.waitForResponse();
+        } catch (CompletionException e) {
+            throw e.getCause();
+        }
     }
 
     public void completeInvocation(InvocationDescriptor invocationDescriptor, Object value) {

@@ -18,7 +18,7 @@ public class ProxyInvocHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTimedOutException {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // build invocation descriptor
         Class<?>[] argTypes = new Class<?>[args.length];
         for (int i = 0; i < args.length; i++)

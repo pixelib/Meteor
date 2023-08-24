@@ -28,7 +28,7 @@ public class PendingInvocationTest {
     }
 
     @Test
-    public void testPendingInvocation() {
+    public void testPendingInvocation() throws Throwable {
         // base instance
         Rpcnis rpcnis = new Rpcnis(new LoopbackTransport());
 
@@ -47,7 +47,6 @@ public class PendingInvocationTest {
         });
 
         String response = rpcnis.invoke(invocationDescriptor, String.class);
-
         assert response.equals(testString);
     }
 
