@@ -1,9 +1,7 @@
 package com.rpcnis.core.proxy;
 
-import com.rpcnis.base.RpcOptions;
 import com.rpcnis.base.errors.InvocationTimedOutException;
-import com.rpcnis.core.Rpcnis;
-import com.rpcnis.core.models.InvocationDescriptor;
+import com.rpcnis.core.transport.packets.InvocationDescriptor;
 
 import java.util.Timer;
 import java.util.TimerTask;

@@ -1,7 +1,7 @@
 package com.rpcnis.core.executor;
 
 import com.rpcnis.base.errors.MethodInvocationException;
-import com.rpcnis.core.models.InvocationDescriptor;
+import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.utils.ArgumentTransformer;
 
 import java.lang.reflect.Method;

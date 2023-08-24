@@ -1,7 +1,7 @@
 package com.rpcnis.core.trackers;
 
 import com.rpcnis.base.RpcOptions;
-import com.rpcnis.core.models.InvocationDescriptor;
+import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.proxy.PendingInvocation;
 
 import java.util.Timer;

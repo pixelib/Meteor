@@ -2,7 +2,7 @@ package com.rpcnis.core.invocations;
 
 import com.rpcnis.base.RpcOptions;
 import com.rpcnis.base.errors.InvocationTimedOutException;
-import com.rpcnis.core.models.InvocationDescriptor;
+import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.trackers.OutgoingInvocationTracker;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

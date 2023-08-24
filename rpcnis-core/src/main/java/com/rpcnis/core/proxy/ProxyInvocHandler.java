@@ -1,6 +1,6 @@
 package com.rpcnis.core.proxy;
 
-import com.rpcnis.core.models.InvocationDescriptor;
+import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.trackers.OutgoingInvocationTracker;
 
 import java.lang.reflect.InvocationHandler;

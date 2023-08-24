@@ -23,6 +23,10 @@ public class ArgumentTransformer {
             void.class, Void.class
     );
 
+    public static Class<?> getBoxedClass(Class<?> primitiveClass) {
+        return PRIMITIVE_TO_BOXED.getOrDefault(primitiveClass, primitiveClass);
+    }
+
     /**
      * Method arguments cannot be mapped one-to-one to an invocation, because the actual signatures
      * may differ from the declared signatures (this can happen with optional arrays, for example).

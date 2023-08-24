@@ -5,7 +5,7 @@ import com.rpcnis.base.RpcTransport;
 import com.rpcnis.base.enums.Direction;
 import com.rpcnis.base.enums.ReadStatus;
 import com.rpcnis.core.executor.ImplementationWrapper;
-import com.rpcnis.core.models.InvocationDescriptor;
+import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.trackers.IncomingInvocationTracker;
 
 import java.util.Collection;

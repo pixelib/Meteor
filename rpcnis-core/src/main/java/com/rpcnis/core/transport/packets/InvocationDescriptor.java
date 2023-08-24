@@ -1,9 +1,11 @@
-package com.rpcnis.core.models;
+package com.rpcnis.core.transport.packets;
 
 import com.rpcnis.base.RpcSerializer;
+import com.rpcnis.core.utils.ArgumentTransformer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.nio.charset.Charset;
 import java.util.UUID;
 
 public class InvocationDescriptor {
@@ -39,7 +41,6 @@ public class InvocationDescriptor {
      */
     private Class<?>[] argTypes;
 
-
     /**
      * Return type of the method.
      */
@@ -67,22 +68,23 @@ public class InvocationDescriptor {
         buffer.writeBoolean(namespace != null);
         if (namespace != null) {
             buffer.writeInt(namespace.length());
-            buffer.writeCharSequence(namespace, null);
+            buffer.writeCharSequence(namespace, Charset.defaultCharset());
         }
 
         buffer.writeInt(declaringClass.getName().length());
-        buffer.writeCharSequence(declaringClass.getName(), null);
+        buffer.writeCharSequence(declaringClass.getName(), Charset.defaultCharset());
 
         buffer.writeInt(methodName.length());
-        buffer.writeCharSequence(methodName, null);
+        buffer.writeCharSequence(methodName, Charset.defaultCharset());
 
         buffer.writeInt(args.length);
         for (Object arg : args) {
             buffer.writeBoolean(arg != null);
             if (arg != null) {
-                String argClassName = arg.getClass().getName();
+                Class<?> argClass = ArgumentTransformer.getBoxedClass(arg.getClass());
+                String argClassName = argClass.getName();
                 buffer.writeInt(argClassName.length());
-                buffer.writeCharSequence(argClassName, null);
+                buffer.writeCharSequence(argClassName, Charset.defaultCharset());
 
                 byte[] serialized = serializer.serialize(arg);
                 buffer.writeInt(serialized.length);
@@ -92,12 +94,14 @@ public class InvocationDescriptor {
 
         buffer.writeInt(argTypes.length);
         for (Class<?> argType : argTypes) {
+            argType = ArgumentTransformer.getBoxedClass(argType);
             buffer.writeInt(argType.getName().length());
-            buffer.writeCharSequence(argType.getName(), null);
+            buffer.writeCharSequence(argType.getName(), Charset.defaultCharset());
         }
 
-        buffer.writeInt(returnType.getName().length());
-        buffer.writeCharSequence(returnType.getName(), null);
+        Class<?> safeReturnType = ArgumentTransformer.getBoxedClass(returnType);
+        buffer.writeInt(safeReturnType.getName().length());
+        buffer.writeCharSequence(safeReturnType.getName(), Charset.defaultCharset());
         byte[] byteArray = new byte[buffer.readableBytes()];
         buffer.readBytes(byteArray);
         // release the buffer
@@ -111,18 +115,18 @@ public class InvocationDescriptor {
 
         String namespace = null;
         if (buffer.readBoolean()) {
-            namespace = buffer.readCharSequence(buffer.readInt(), null).toString();
+            namespace = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
         }
 
-        String declaringClassName = buffer.readCharSequence(buffer.readInt(), null).toString();
+        String declaringClassName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
         Class<?> declaringClass = Class.forName(declaringClassName);
 
-        String methodName = buffer.readCharSequence(buffer.readInt(), null).toString();
+        String methodName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
 
         Object[] args = new Object[buffer.readInt()];
         for (int i = 0; i < args.length; i++) {
             if (buffer.readBoolean()) {
-                String argClassName = buffer.readCharSequence(buffer.readInt(), null).toString();
+                String argClassName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
                 byte[] serialized = new byte[buffer.readInt()];
                 buffer.readBytes(serialized);
                 args[i] = customDataSerializer.deserialize(serialized, Class.forName(argClassName));
@@ -131,11 +135,11 @@ public class InvocationDescriptor {
 
         Class<?>[] argTypes = new Class<?>[buffer.readInt()];
         for (int i = 0; i < argTypes.length; i++) {
-            String argTypeClassName = buffer.readCharSequence(buffer.readInt(), null).toString();
+            String argTypeClassName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
             argTypes[i] = Class.forName(argTypeClassName);
         }
 
-        String returnTypeName = buffer.readCharSequence(buffer.readInt(), null).toString();
+        String returnTypeName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
         Class<?> returnType = Class.forName(returnTypeName);
 
         // release the buffer
