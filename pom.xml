@@ -12,6 +12,7 @@
     <modules>
         <module>rpcnis-common</module>
         <module>rpcnis-core</module>
+        <module>examples</module>
     </modules>
 
     <properties>
