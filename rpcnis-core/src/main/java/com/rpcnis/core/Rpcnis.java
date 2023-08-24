@@ -67,6 +67,19 @@ public class Rpcnis {
         return pendingInvocation.waitForResponse();
     }
 
+    public void completeInvocation(InvocationDescriptor invocationDescriptor, Object value) {
+        // do we have a pending invocation for this invocation id?
+        PendingInvocation<?> pendingInvocation = pendingInvocations.get(invocationDescriptor.getUniqueInvocationId());
+        if (pendingInvocation == null) {
+            throw new IllegalStateException("No pending invocation found for invocation id " + invocationDescriptor.getUniqueInvocationId());
+        }
+
+        pendingInvocation.complete(value);
+
+        // remove the pending invocation from the map
+        pendingInvocations.remove(invocationDescriptor.getUniqueInvocationId());
+    }
+
     public RpcOptions getOptions() {
         return options;
     }
@@ -74,5 +87,4 @@ public class Rpcnis {
     public Timer getTimer() {
         return timer;
     }
-
 }

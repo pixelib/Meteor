@@ -41,7 +41,7 @@ public class PendingInvocation<T> extends TimerTask {
      * This should be directly invoked from the transport when a response is received and deserialized.
      * @param response The response to complete the invocation with.
      */
-    public void complete(T response) throws IllegalStateException {
+    public void complete(Object response) throws IllegalStateException {
         if (isTimedOut.get()) {
             throw new IllegalStateException("Cannot complete invocation after timeout.");
         }
@@ -50,8 +50,13 @@ public class PendingInvocation<T> extends TimerTask {
             throw new IllegalStateException("Cannot complete invocation twice.");
         }
 
+        // check instance of response
+        if (!invocationDescriptor.getReturnType().isInstance(response)) {
+            throw new IllegalStateException("Response is not an instance of the expected return type.");
+        }
+
         isComplete.set(true);
-        this.completable.complete(response);
+        this.completable.complete((T) response);
     }
 
     public T waitForResponse() throws InvocationTimedOutException {
