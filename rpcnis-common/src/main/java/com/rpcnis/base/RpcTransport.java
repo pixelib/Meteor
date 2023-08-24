@@ -1,5 +1,6 @@
 package com.rpcnis.base;
 
+import com.rpcnis.base.enums.Direction;
 import com.rpcnis.base.enums.ReadStatus;
 
 import java.io.Closeable;
@@ -9,10 +10,11 @@ import java.util.function.Function;
 public interface RpcTransport extends Closeable {
 
     /**
+     * @param direction the direction of the packet
      * @param bytes the bytes to send
      *              bytes given should already been considered as a packet, and should not be further processed by the transport implementation
      */
-    void send(byte[] bytes);
+    void send(Direction direction, byte[] bytes);
 
     /**
      * @param onReceive a function that will be called when a packet is received.
