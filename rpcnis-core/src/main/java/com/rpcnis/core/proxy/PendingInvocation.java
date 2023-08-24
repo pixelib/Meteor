@@ -19,10 +19,13 @@ public class PendingInvocation<T> extends TimerTask {
     private final CompletableFuture<T> completable;
     private final InvocationDescriptor invocationDescriptor;
 
+    // A callback to be called when the invocation times out. Used to mitigate the risk of memory leaks.
+    private Runnable timeoutCallback;
+
     private AtomicBoolean isComplete = new AtomicBoolean(false);
     private AtomicBoolean isTimedOut = new AtomicBoolean(false);
 
-    public PendingInvocation(Rpcnis rpcnis, InvocationDescriptor invocationDescriptor) {
+    public PendingInvocation(Rpcnis rpcnis, InvocationDescriptor invocationDescriptor, Runnable timeoutCallback) {
         this.invocationDescriptor = invocationDescriptor;
         this.timeoutSeconds = rpcnis.getOptions().getTimeoutSeconds();
         completable = new CompletableFuture<>();
@@ -62,5 +65,10 @@ public class PendingInvocation<T> extends TimerTask {
 
         isTimedOut.set(true);
         this.completable.completeExceptionally(new InvocationTimedOutException(invocationDescriptor.getMethodName(), invocationDescriptor.getTargetName(), timeoutSeconds));
+
+        // call the timeout callback
+        if (timeoutCallback != null) {
+            timeoutCallback.run();
+        }
     }
 }
