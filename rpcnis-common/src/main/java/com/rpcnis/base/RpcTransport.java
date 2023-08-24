@@ -9,21 +9,10 @@ import java.util.function.Function;
 public interface RpcTransport extends Closeable {
 
     /**
-     * @throws IOException if the connection failed
-     */
-    // other methods may be overloaded with options, like for redis
-    void connect() throws IOException;
-
-    /**
      * @param bytes the bytes to send
      *              bytes given should already been considered as a packet, and should not be further processed by the transport implementation
      */
     void send(byte[] bytes);
-
-    /**
-     * @return true if the transport is connected, false otherwise
-     */
-    boolean isConnected();
 
     /**
      * @param onReceive a function that will be called when a packet is received.

@@ -9,6 +9,7 @@ import com.rpcnis.core.proxy.ProxyInvocHandler;
 import com.rpcnis.core.proxy.RpcnisMock;
 import com.rpcnis.core.trackers.IncomingInvocationTracker;
 import com.rpcnis.core.trackers.OutgoingInvocationTracker;
+import com.rpcnis.core.transport.TransportHandler;
 
 import java.lang.reflect.Proxy;
 import java.util.Collection;
@@ -19,14 +20,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Rpcnis {
 
     private final RpcOptions options;
-    private final RpcSerializer serializer;
-    private final RpcTransport transport;
 
     // Timer for scheduling timeouts and retries
     private final Timer timer = new Timer();
 
     private final OutgoingInvocationTracker outgoingInvocationTracker;
     private final IncomingInvocationTracker incomingInvocationTracker;
+    private final TransportHandler transportHandler;
 
     /**
      * @param options    A preconfigured RpcOptions object.
@@ -34,12 +34,11 @@ public class Rpcnis {
      * @param transport  The transport to use for sending and receiving data.
      */
     public Rpcnis(RpcTransport transport, RpcOptions options, RpcSerializer serializer) {
-        this.transport = transport;
         this.options = options;
-        this.serializer = serializer;
 
         outgoingInvocationTracker = new OutgoingInvocationTracker(options, timer);
         incomingInvocationTracker = new IncomingInvocationTracker();
+        transportHandler = new TransportHandler(serializer, transport);
     }
 
     /**
