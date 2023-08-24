@@ -29,7 +29,7 @@ class RpcnisTest {
 
         assertThrowsExactly(IllegalArgumentException.class, () -> {
             Rpcnis procedure = rpcNis.registerProcedure(Rpcnis.class);
-        }, "Procedure must be an interface");
+        }, "Procedure was an interface");
     }
 
     @Test
@@ -38,7 +38,7 @@ class RpcnisTest {
 
         assertThrowsExactly(NullPointerException.class, () -> {
             MathFunctions mathFunctions = rpcNis.registerProcedure(null);
-        });
+        }, "Argument was not null");
     }
 
 

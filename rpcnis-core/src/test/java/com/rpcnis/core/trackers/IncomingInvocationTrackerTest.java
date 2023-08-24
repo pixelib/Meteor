@@ -35,6 +35,13 @@ class IncomingInvocationTrackerTest {
         assertTrue(matched, "Implementation not registered");
     }
 
+    @Test
+    void testRegisterImplementationArgumentNoInterface_thenFail() {
+        IncomingInvocationTracker incomingInvocationTracker = new IncomingInvocationTracker();
+
+        assertThrowsExactly(IllegalArgumentException.class, () -> incomingInvocationTracker.registerImplementation(new Object(), "test"), "Implementation implemented an interface/procedure");
+    }
+
     public class TestMathFunctions implements MathFunctions {
 
         @Override
