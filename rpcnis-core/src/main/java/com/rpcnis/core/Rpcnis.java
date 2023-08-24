@@ -4,7 +4,6 @@ import com.rpcnis.base.RpcOptions;
 import com.rpcnis.base.RpcSerializer;
 import com.rpcnis.base.RpcTransport;
 import com.rpcnis.base.defaults.GsonSerializer;
-import com.rpcnis.core.executor.ImplementationWrapper;
 import com.rpcnis.core.proxy.ProxyInvocHandler;
 import com.rpcnis.core.proxy.RpcnisMock;
 import com.rpcnis.core.trackers.IncomingInvocationTracker;
@@ -12,10 +11,8 @@ import com.rpcnis.core.trackers.OutgoingInvocationTracker;
 import com.rpcnis.core.transport.TransportHandler;
 
 import java.lang.reflect.Proxy;
-import java.util.Collection;
 import java.util.Locale;
 import java.util.Timer;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Rpcnis {
 
@@ -36,7 +33,7 @@ public class Rpcnis {
     public Rpcnis(RpcTransport transport, RpcOptions options, RpcSerializer serializer) {
         this.options = options;
 
-        outgoingInvocationTracker = new OutgoingInvocationTracker(options, timer);
+        outgoingInvocationTracker = new OutgoingInvocationTracker(transport, serializer, options, timer);
         incomingInvocationTracker = new IncomingInvocationTracker();
         transportHandler = new TransportHandler(serializer, transport, incomingInvocationTracker);
     }

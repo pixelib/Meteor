@@ -1,6 +1,9 @@
 package com.rpcnis.core.trackers;
 
 import com.rpcnis.base.RpcOptions;
+import com.rpcnis.base.RpcSerializer;
+import com.rpcnis.base.RpcTransport;
+import com.rpcnis.base.enums.Direction;
 import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.proxy.PendingInvocation;
 
@@ -13,13 +16,17 @@ public class OutgoingInvocationTracker {
 
     private final Timer timer;
     private final RpcOptions options;
+    private RpcTransport transport;
+    private RpcSerializer serializer;
 
     // Map of pending invocations, keyed by invocation id
     private final ConcurrentHashMap<UUID, PendingInvocation<?>> pendingInvocations = new ConcurrentHashMap<>();
 
-    public OutgoingInvocationTracker(RpcOptions options, Timer timer) {
+    public OutgoingInvocationTracker(RpcTransport transport, RpcSerializer serializer, RpcOptions options, Timer timer) {
+        this.transport = transport;
         this.options = options;
         this.timer = timer;
+        this.serializer = serializer;
     }
 
     public <T> T invokeRemoteMethod(InvocationDescriptor invocationDescriptor) throws Throwable {
@@ -32,7 +39,7 @@ public class OutgoingInvocationTracker {
         // add the pending invocation to the map
         pendingInvocations.put(invocationDescriptor.getUniqueInvocationId(), pendingInvocation);
 
-        // TODO: transmit
+        transport.send(Direction.IMPLEMENTATION, invocationDescriptor.toBuffer(serializer));
 
         // wait for response or timeout
         try {

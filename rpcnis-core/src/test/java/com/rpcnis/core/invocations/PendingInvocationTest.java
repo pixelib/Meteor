@@ -1,6 +1,8 @@
 package com.rpcnis.core.invocations;
 
 import com.rpcnis.base.RpcOptions;
+import com.rpcnis.base.defaults.GsonSerializer;
+import com.rpcnis.base.defaults.LoopbackTransport;
 import com.rpcnis.base.errors.InvocationTimedOutException;
 import com.rpcnis.core.transport.packets.InvocationDescriptor;
 import com.rpcnis.core.trackers.OutgoingInvocationTracker;
@@ -37,7 +39,7 @@ public class PendingInvocationTest {
     @Test
     public void testPendingInvocation() throws Throwable {
         // base instance
-        OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(new RpcOptions(), new Timer());
+        OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(new LoopbackTransport(), new GsonSerializer(), new RpcOptions(), new Timer());
 
         InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", getClass(), "methodName", new Object[]{}, new Class[]{}, String.class);
 
@@ -62,7 +64,7 @@ public class PendingInvocationTest {
     public void testTimeout() {
         RpcOptions options = new RpcOptions();
         options.setTimeoutSeconds(1);
-        OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(options, new Timer());
+        OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(new LoopbackTransport(), new GsonSerializer(), options, new Timer());
 
         InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", getClass(), "methodName", new Object[]{}, new Class[]{}, String.class);
 

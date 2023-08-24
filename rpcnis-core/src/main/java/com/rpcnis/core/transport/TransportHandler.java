@@ -21,7 +21,7 @@ public class TransportHandler {
         this.transport = transport;
         this.incomingInvocationTracker = incomingInvocationTracker;
 
-        transport.subscribe(Direction.TO_INVOKER, this::handleInvocationRequest);
+        transport.subscribe(Direction.IMPLEMENTATION, this::handleInvocationRequest);
     }
 
     private ReadStatus handleInvocationRequest(byte[] bytes) throws ClassNotFoundException {
