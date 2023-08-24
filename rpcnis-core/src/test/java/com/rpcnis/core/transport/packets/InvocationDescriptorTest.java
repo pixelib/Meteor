@@ -19,10 +19,10 @@ class InvocationDescriptorTest {
 
         assertEquals(a.getArgTypes().length, b.getArgTypes().length);
         for (int i = 0; i < a.getArgTypes().length; i++) {
-            assertEquals(ReflectionUtil.ensureBoxedClass(a.getArgTypes()[i]), b.getArgTypes()[i]);
+            assertEquals(a.getArgTypes()[i], b.getArgTypes()[i]);
         }
 
-        assertEquals(ReflectionUtil.ensureBoxedClass(a.getReturnType()), b.getReturnType());
+        assertEquals(a.getReturnType(), b.getReturnType());
     }
 
     @Test
