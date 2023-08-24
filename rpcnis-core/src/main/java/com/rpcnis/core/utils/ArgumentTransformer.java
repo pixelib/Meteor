@@ -1,12 +1,16 @@
 package com.rpcnis.core.utils;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ArgumentTransformer {
 
-    private static final Map<Class<?>, Class<?>> PRIMATIVE_TO_BOXED = Map.of(
+    /**
+     * Map of primitive classes to their boxed counterparts.
+     * This is because they aren't strictly the same, so one cannot construct an array of primitives despite
+     * the method signature declaring it as such.
+     */
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_BOXED = Map.of(
             boolean.class, Boolean.class,
             byte.class, Byte.class,
             char.class, Character.class,
@@ -37,13 +41,13 @@ public class ArgumentTransformer {
         if (lastParameterType.isArray()) {
             // create an array of the correct type
             int length = allArguments.length - method.getParameterCount() + 1;
-            Class<?> componentType = PRIMATIVE_TO_BOXED.getOrDefault(lastParameterType.getComponentType(), lastParameterType.getComponentType());
+            Class<?> componentType = PRIMITIVE_TO_BOXED.getOrDefault(lastParameterType.getComponentType(), lastParameterType.getComponentType());
 
             Object[] array = (Object[]) java.lang.reflect.Array.newInstance(componentType, length);
 
             // fill the array with the remaining arguments
             if (allArguments.length - (method.getParameterCount() - 1) >= 0)
-                System.arraycopy(allArguments, method.getParameterCount() - 1, array, method.getParameterCount() - 1 - method.getParameterCount() + 1, allArguments.length - (method.getParameterCount() - 1));
+                System.arraycopy(allArguments, method.getParameterCount() - 1, array, 0, allArguments.length - (method.getParameterCount() - 1));
 
             // set the array as the last argument
             output[output.length - 1] = array;
