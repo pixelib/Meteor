@@ -1,9 +1,11 @@
 package com.rpcnis.core.proxy;
 
+import com.rpcnis.base.RpcOptions;
 import com.rpcnis.base.errors.InvocationTimedOutException;
 import com.rpcnis.core.Rpcnis;
 import com.rpcnis.core.models.InvocationDescriptor;
 
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,14 +28,14 @@ public class PendingInvocation<T> extends TimerTask {
     private final AtomicBoolean isComplete = new AtomicBoolean(false);
     private final AtomicBoolean isTimedOut = new AtomicBoolean(false);
 
-    public PendingInvocation(Rpcnis rpcnis, InvocationDescriptor invocationDescriptor, Runnable timeoutCallback) {
+    public PendingInvocation(int timeoutSeconds, Timer timer, InvocationDescriptor invocationDescriptor, Runnable timeoutCallback) {
         this.invocationDescriptor = invocationDescriptor;
         this.timeoutCallback = timeoutCallback;
-        this.timeoutSeconds = rpcnis.getOptions().getTimeoutSeconds();
+        this.timeoutSeconds = timeoutSeconds;
         completable = new CompletableFuture<>();
 
         // schedule timeout, timeoutSeconds is in seconds, Timer.schedule() takes milliseconds
-        rpcnis.getTimer().schedule(this, TimeUnit.SECONDS.toMillis(timeoutSeconds));
+        timer.schedule(this, TimeUnit.SECONDS.toMillis(timeoutSeconds));
     }
 
     /**

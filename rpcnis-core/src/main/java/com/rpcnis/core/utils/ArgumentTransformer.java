@@ -1,5 +1,6 @@
 package com.rpcnis.core.utils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public class ArgumentTransformer {
             int length = allArguments.length - method.getParameterCount() + 1;
             Class<?> componentType = PRIMITIVE_TO_BOXED.getOrDefault(lastParameterType.getComponentType(), lastParameterType.getComponentType());
 
-            Object[] array = (Object[]) java.lang.reflect.Array.newInstance(componentType, length);
+            Object[] array = (Object[]) Array.newInstance(componentType, length);
 
             // fill the array with the remaining arguments
             if (allArguments.length - (method.getParameterCount() - 1) >= 0)

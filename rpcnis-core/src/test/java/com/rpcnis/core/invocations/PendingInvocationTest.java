@@ -1,11 +1,14 @@
 package com.rpcnis.core.invocations;
 
+import com.rpcnis.base.RpcOptions;
 import com.rpcnis.base.defaults.LoopbackTransport;
 import com.rpcnis.base.errors.InvocationTimedOutException;
 import com.rpcnis.core.Rpcnis;
 import com.rpcnis.core.models.InvocationDescriptor;
+import com.rpcnis.core.trackers.OutgoingInvocationTracker;
 import org.junit.jupiter.api.*;
 
+import java.util.Timer;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +33,7 @@ public class PendingInvocationTest {
     @Test
     public void testPendingInvocation() throws Throwable {
         // base instance
-        Rpcnis rpcnis = new Rpcnis(new LoopbackTransport());
+        OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(new RpcOptions(), new Timer());
 
         InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", "methodName", new Object[]{}, new Class[]{}, String.class);
 
@@ -43,24 +46,24 @@ public class PendingInvocationTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            rpcnis.completeInvocation(invocationDescriptor, testString);
+            outgoingInvocationTracker.completeInvocation(invocationDescriptor, testString);
         });
 
-        String response = rpcnis.invokeRemoteMethod(invocationDescriptor);
+        String response = outgoingInvocationTracker.invokeRemoteMethod(invocationDescriptor);
         assert response.equals(testString);
     }
 
     @Test
-    @Timeout(3) // seconds
+    @Timeout(2) // seconds
     public void testTimeout() {
-        // base instance
-        Rpcnis rpcnis = new Rpcnis(new LoopbackTransport());
-        rpcnis.getOptions().setTimeoutSeconds(2); // or else it will take 10 seconds to run
+        RpcOptions options = new RpcOptions();
+        options.setTimeoutSeconds(1);
+        OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(options, new Timer());
 
         InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", "methodName", new Object[]{}, new Class[]{}, String.class);
 
         Assertions.assertThrowsExactly(InvocationTimedOutException.class, () -> {
-            rpcnis.invokeRemoteMethod(invocationDescriptor);
+            outgoingInvocationTracker.invokeRemoteMethod(invocationDescriptor);
         });
 
 
