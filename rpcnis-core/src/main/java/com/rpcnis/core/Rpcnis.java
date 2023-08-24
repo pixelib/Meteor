@@ -30,18 +30,26 @@ public class Rpcnis {
      * @param serializer The serializer to use for serializing and deserializing objects.
      * @param transport The transport to use for sending and receiving data.
      */
-    public Rpcnis(RpcOptions options, RpcSerializer serializer, RpcTransport transport) {
+    public Rpcnis(RpcTransport transport, RpcOptions options, RpcSerializer serializer) {
+        this.transport = transport;
         this.options = options;
         this.serializer = serializer;
-        this.transport = transport;
     }
 
     /**
      * @param serializer The serializer to use for serializing and deserializing objects.
      * @param transport The transport to use for sending and receiving data.
      */
-    public Rpcnis(RpcSerializer serializer, RpcTransport transport) {
-        this(new RpcOptions(), serializer, null);
+    public Rpcnis(RpcTransport transport, RpcSerializer serializer) {
+        this(transport, new RpcOptions(), serializer);
+    }
+
+    /**
+     * @param options A preconfigured RpcOptions object.
+     * @param transport The transport to use for sending and receiving data.
+     */
+    public Rpcnis(RpcTransport transport, RpcOptions options) {
+        this(transport, options, new GsonSerializer());
     }
 
     /**
@@ -49,7 +57,7 @@ public class Rpcnis {
      * @param transport The transport to use for sending and receiving data.
      */
     public Rpcnis(RpcTransport transport) {
-        this(new RpcOptions(), new GsonSerializer(), transport);
+        this(transport, new RpcOptions(), new GsonSerializer());
     }
 
     public <T> T invoke(InvocationDescriptor invocationDescriptor, Class<T> returnType) throws Throwable {
