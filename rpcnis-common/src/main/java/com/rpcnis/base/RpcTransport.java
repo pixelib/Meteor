@@ -17,6 +17,7 @@ public interface RpcTransport extends Closeable {
     void send(Direction direction, byte[] bytes);
 
     /**
+     * @param target the direction of the packet we want to listen to
      * @param onReceive a function that will be called when a packet is received.
      *                  the function should return a ReadStatus, which will be used to determine if the packet was handled or not.
      *                  if the packet was handled, the transport implementation should stop processing the packet.
