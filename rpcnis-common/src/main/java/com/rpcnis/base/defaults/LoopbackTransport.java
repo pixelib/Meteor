@@ -1,16 +1,20 @@
 package com.rpcnis.base.defaults;
 
 import com.rpcnis.base.RpcTransport;
+import com.rpcnis.base.enums.Direction;
 import com.rpcnis.base.enums.ReadStatus;
+import com.rpcnis.base.interfaces.SubscriptionHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class LoopbackTransport implements RpcTransport {
 
-    private List<Function<byte[], ReadStatus>> onReceiveFunctions = new ArrayList<>();
+    private Map<Direction, List<SubscriptionHandler>> onReceiveFunctions = new HashMap<>();
 
     /**
      * @param bytes the bytes to send
@@ -20,9 +24,14 @@ public class LoopbackTransport implements RpcTransport {
      *              no actual sending is done, as this is a loopback transport meant for testing
      */
     @Override
-    public void send(byte[] bytes) {
-        for (Function<byte[], ReadStatus> onReceiveFunction : onReceiveFunctions) {
-            ReadStatus status = onReceiveFunction.apply(bytes);
+    public void send(Direction direction, byte[] bytes) {
+        for (SubscriptionHandler onReceiveFunction : onReceiveFunctions.getOrDefault(direction, new ArrayList<>())) {
+            ReadStatus status = null;
+            try {
+                status = onReceiveFunction.onPacket(bytes);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (status == ReadStatus.HANDLED) {
                 break;
             }
@@ -30,6 +39,7 @@ public class LoopbackTransport implements RpcTransport {
     }
 
     /**
+     * @param target the direction of the packet we want to listen to
      * @param onReceive a function that will be called when a packet is received.
      *                  the function should return a ReadStatus, which will be used to determine if the packet was handled or not.
      *                  if the packet was handled, the transport implementation should stop processing the packet.
@@ -37,8 +47,8 @@ public class LoopbackTransport implements RpcTransport {
      *                  the transport implementation should call the onReceive function, regardless of the ReadStatus.
      */
     @Override
-    public void onReceive(Function<byte[], ReadStatus> onReceive) {
-        onReceiveFunctions.add(onReceive);
+    public void subscribe(Direction target, SubscriptionHandler onReceive) {
+        onReceiveFunctions.computeIfAbsent(target, k -> new ArrayList<>()).add(onReceive);
     }
 
     /**
