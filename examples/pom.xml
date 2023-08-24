@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>com.npcnis</groupId>
-            <artifactId>rpcnis-base</artifactId>
+            <artifactId>rpcnis-common</artifactId>
             <version>${parent.version}</version>
         </dependency>
     </dependencies>

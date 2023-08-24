@@ -56,6 +56,10 @@ public class ArgumentTransformer {
             output[output.length - 1] = allArguments[allArguments.length - 1];
         }
 
+        // sanity check; is the output array the same length as the method's parameter count?
+        if (output.length != method.getParameterCount())
+            throw new RuntimeException("Overflowing arguments failed! Expected " + method.getParameterCount() + " arguments, got " + output.length + " arguments.");
+
         return output;
     }
 
