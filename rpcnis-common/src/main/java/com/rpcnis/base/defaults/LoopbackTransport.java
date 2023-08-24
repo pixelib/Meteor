@@ -13,12 +13,10 @@ public class LoopbackTransport implements RpcTransport {
     private List<Function<byte[], ReadStatus>> onReceiveFunctions = new ArrayList<>();
 
     /**
-     * @param host the host to connect to (unused)
-     * @param port the port to connect to (unused)
      * @throws IOException if the connection failed (unused)
      */
     @Override
-    public void connect(String host, int port) throws IOException {
+    public void connect() throws IOException {
         // unused
     }
 

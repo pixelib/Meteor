@@ -9,12 +9,10 @@ import java.util.function.Function;
 public interface RpcTransport extends Closeable {
 
     /**
-     * @param host the host to connect to
-     * @param port the port to connect to
      * @throws IOException if the connection failed
      */
     // other methods may be overloaded with options, like for redis
-    void connect(String host, int port) throws IOException;
+    void connect() throws IOException;
 
     /**
      * @param bytes the bytes to send
