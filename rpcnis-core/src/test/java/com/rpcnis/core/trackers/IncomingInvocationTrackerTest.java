@@ -42,7 +42,7 @@ class IncomingInvocationTrackerTest {
         assertThrowsExactly(IllegalArgumentException.class, () -> incomingInvocationTracker.registerImplementation(new Object(), "test"), "Implementation implemented an interface/procedure");
     }
 
-    public class TestMathFunctions implements MathFunctions {
+    public static class TestMathFunctions implements MathFunctions {
 
         @Override
         public int multiply(int x, int times) {
