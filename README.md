@@ -10,3 +10,7 @@ This might not be what you want, so you can use a queue transport, which will en
 ### To serialize or not to serialize
 The library itself is/should be unopinionated about serialization.
 GSON gets used by default, but you can use any other serialization library you want, as long as it can serialize and deserialize generic types with another fallback method for unknown types.
+
+
+# Notes
+- The serializer is only used for argument and reponse values, not for the methods, classes or internal interfaces themselves.

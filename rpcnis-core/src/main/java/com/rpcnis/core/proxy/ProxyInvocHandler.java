@@ -23,7 +23,7 @@ public class ProxyInvocHandler implements InvocationHandler {
         for (int i = 0; i < args.length; i++)
             argTypes[i] = args[i].getClass();
 
-        InvocationDescriptor invocationDescriptor = new InvocationDescriptor(namespace, method.getName(), args, argTypes, method.getReturnType());
+        InvocationDescriptor invocationDescriptor = new InvocationDescriptor(namespace, method.getDeclaringClass(), method.getName(), args, argTypes, method.getReturnType());
 
         // wait for response or timeout
         return localInvocationTracker.invokeRemoteMethod(invocationDescriptor);

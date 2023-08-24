@@ -39,7 +39,7 @@ public class PendingInvocationTest {
         // base instance
         OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(new RpcOptions(), new Timer());
 
-        InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", "methodName", new Object[]{}, new Class[]{}, String.class);
+        InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", getClass(), "methodName", new Object[]{}, new Class[]{}, String.class);
 
         String testString = "test invocation";
 
@@ -64,7 +64,7 @@ public class PendingInvocationTest {
         options.setTimeoutSeconds(1);
         OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(options, new Timer());
 
-        InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", "methodName", new Object[]{}, new Class[]{}, String.class);
+        InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", getClass(), "methodName", new Object[]{}, new Class[]{}, String.class);
 
         assertThrowsExactly(InvocationTimedOutException.class, () -> {
             outgoingInvocationTracker.invokeRemoteMethod(invocationDescriptor);
