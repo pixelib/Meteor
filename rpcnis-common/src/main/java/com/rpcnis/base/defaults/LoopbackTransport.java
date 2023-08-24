@@ -13,14 +13,6 @@ public class LoopbackTransport implements RpcTransport {
     private List<Function<byte[], ReadStatus>> onReceiveFunctions = new ArrayList<>();
 
     /**
-     * @throws IOException if the connection failed (unused)
-     */
-    @Override
-    public void connect() throws IOException {
-        // unused
-    }
-
-    /**
      * @param bytes the bytes to send
      *              bytes given should already been considered as a packet, and should not be further processed by the transport implementation
      *
@@ -35,14 +27,6 @@ public class LoopbackTransport implements RpcTransport {
                 break;
             }
         }
-    }
-
-    /**
-     * @return always true, as this is a loopback transport meant for testing
-     */
-    @Override
-    public boolean isConnected() {
-        return true;
     }
 
     /**
