@@ -4,6 +4,7 @@ import com.rpcnis.base.defaults.LoopbackTransport;
 import com.rpcnis.core.proxy.ProxyInvocHandler;
 import com.rpcnis.core.proxy.RpcnisMock;
 import org.junit.jupiter.api.Test;
+import utils.MathFunctions;
 
 import java.lang.reflect.Proxy;
 
@@ -91,11 +92,4 @@ class RpcnisTest {
         assertFalse(isRpcnis);
     }
 
-
-    public interface MathFunctions {
-
-        int multiply(int x, int times);
-        int add(int... numbers);
-        int substract(int from, int... numbers);
-    }
 }

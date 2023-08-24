@@ -8,8 +8,8 @@ import java.lang.reflect.Method;
 
 public class ImplementationWrapper {
 
-    private Object implementation;
-    private String namespace;
+    private final Object implementation;
+    private final String namespace;
 
     public ImplementationWrapper(Object implementation, String namespace) {
         this.implementation = implementation;
@@ -37,4 +37,11 @@ public class ImplementationWrapper {
         }
     }
 
+    public Object getImplementation() {
+        return implementation;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
 }

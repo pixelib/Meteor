@@ -28,4 +28,7 @@ public class IncomingInvocationTracker {
         }
     }
 
+    public ConcurrentHashMap<Class<?>, Collection<ImplementationWrapper>> getImplementations() {
+        return implementations;
+    }
 }

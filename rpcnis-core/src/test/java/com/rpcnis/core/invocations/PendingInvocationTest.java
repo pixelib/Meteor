@@ -1,17 +1,21 @@
 package com.rpcnis.core.invocations;
 
 import com.rpcnis.base.RpcOptions;
-import com.rpcnis.base.defaults.LoopbackTransport;
 import com.rpcnis.base.errors.InvocationTimedOutException;
-import com.rpcnis.core.Rpcnis;
 import com.rpcnis.core.models.InvocationDescriptor;
 import com.rpcnis.core.trackers.OutgoingInvocationTracker;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.Timer;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 public class PendingInvocationTest {
 
@@ -50,7 +54,7 @@ public class PendingInvocationTest {
         });
 
         String response = outgoingInvocationTracker.invokeRemoteMethod(invocationDescriptor);
-        assert response.equals(testString);
+        assertEquals(testString, response);
     }
 
     @Test
@@ -62,11 +66,9 @@ public class PendingInvocationTest {
 
         InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", "methodName", new Object[]{}, new Class[]{}, String.class);
 
-        Assertions.assertThrowsExactly(InvocationTimedOutException.class, () -> {
+        assertThrowsExactly(InvocationTimedOutException.class, () -> {
             outgoingInvocationTracker.invokeRemoteMethod(invocationDescriptor);
         });
-
-
     }
 
 }
