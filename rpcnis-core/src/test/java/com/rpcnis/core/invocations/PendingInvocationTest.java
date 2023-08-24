@@ -46,7 +46,7 @@ public class PendingInvocationTest {
             rpcnis.completeInvocation(invocationDescriptor, testString);
         });
 
-        String response = rpcnis.invokeRemoteMethod(invocationDescriptor, String.class);
+        String response = rpcnis.invokeRemoteMethod(invocationDescriptor);
         assert response.equals(testString);
     }
 
@@ -60,7 +60,7 @@ public class PendingInvocationTest {
         InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", "methodName", new Object[]{}, new Class[]{}, String.class);
 
         Assertions.assertThrowsExactly(InvocationTimedOutException.class, () -> {
-            rpcnis.invokeRemoteMethod(invocationDescriptor, String.class);
+            rpcnis.invokeRemoteMethod(invocationDescriptor);
         });
 
 

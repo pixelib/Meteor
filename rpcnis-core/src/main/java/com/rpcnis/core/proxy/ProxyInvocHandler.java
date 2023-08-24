@@ -26,7 +26,7 @@ public class ProxyInvocHandler implements InvocationHandler {
         InvocationDescriptor invocationDescriptor = new InvocationDescriptor(namespace, method.getName(), args, argTypes, method.getReturnType());
 
         // wait for response or timeout
-        return rpcnis.invokeRemoteMethod(invocationDescriptor, method.getReturnType());
+        return rpcnis.invokeRemoteMethod(invocationDescriptor);
     }
 
 }

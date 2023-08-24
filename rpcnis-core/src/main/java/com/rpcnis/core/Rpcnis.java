@@ -21,18 +21,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Rpcnis {
 
     private final RpcOptions options;
-    private RpcSerializer serializer;
-    private RpcTransport transport;
+    private final RpcSerializer serializer;
+    private final RpcTransport transport;
 
     // Timer for scheduling timeouts and retries
     private final Timer timer = new Timer();
 
     // Map of pending invocations, keyed by invocation id
-    private ConcurrentHashMap<UUID, PendingInvocation<?>> pendingInvocations = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, PendingInvocation<?>> pendingInvocations = new ConcurrentHashMap<>();
 
     // Map invocation handlers by type; used for dispatching incoming invocations
     // Handlers without a namespace (which is nullable) are also stored here
-    private ConcurrentHashMap<Class<?>, Collection<ImplementationWrapper>> invocationHandlers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Class<?>, Collection<ImplementationWrapper>> invocationHandlers = new ConcurrentHashMap<>();
 
     /**
      * @param options A preconfigured RpcOptions object.
@@ -150,7 +150,7 @@ public class Rpcnis {
     }
 
     /* === INTERNAL METHODS === */
-    public <T> T invokeRemoteMethod(InvocationDescriptor invocationDescriptor, Class<T> returnType) throws Throwable {
+    public <T> T invokeRemoteMethod(InvocationDescriptor invocationDescriptor) throws Throwable {
         // create a pending invocation
         PendingInvocation<T> pendingInvocation = new PendingInvocation<>(this, invocationDescriptor, () -> {
             // remove the pending invocation from the map
