@@ -1,6 +1,5 @@
 package com.rpcnis.core.proxy;
 
-import com.rpcnis.base.errors.InvocationTimedOutException;
 import com.rpcnis.core.Rpcnis;
 import com.rpcnis.core.models.InvocationDescriptor;
 
@@ -10,11 +9,11 @@ import java.lang.reflect.Method;
 public class ProxyInvocHandler implements InvocationHandler {
 
     private final Rpcnis rpcnis;
-    private final String targetName;
+    private final String namespace;
 
-    public ProxyInvocHandler(Rpcnis rpcnis, String targetName) {
+    public ProxyInvocHandler(Rpcnis rpcnis, String namespace) {
         this.rpcnis = rpcnis;
-        this.targetName = targetName;
+        this.namespace = namespace;
     }
 
     @Override
@@ -24,10 +23,10 @@ public class ProxyInvocHandler implements InvocationHandler {
         for (int i = 0; i < args.length; i++)
             argTypes[i] = args[i].getClass();
 
-        InvocationDescriptor invocationDescriptor = new InvocationDescriptor(targetName, method.getName(), args, argTypes, method.getReturnType());
+        InvocationDescriptor invocationDescriptor = new InvocationDescriptor(namespace, method.getName(), args, argTypes, method.getReturnType());
 
         // wait for response or timeout
-        return rpcnis.invoke(invocationDescriptor, method.getReturnType());
+        return rpcnis.invokeRemoteMethod(invocationDescriptor, method.getReturnType());
     }
 
 }

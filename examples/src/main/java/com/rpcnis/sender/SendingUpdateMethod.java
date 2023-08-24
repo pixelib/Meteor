@@ -13,6 +13,7 @@ public class SendingUpdateMethod {
         MathFunctions mathFunctions2 = rpcNis.registerProcedure(MathFunctions.class, "Cooler-math-functions");
 
 
+
         int result = mathFunctions.add(1, 2, 3, 4, 5);
     }
 
@@ -21,6 +22,32 @@ public class SendingUpdateMethod {
         int multiply(int x, int times);
         int add(int... numbers);
         int substract(int from, int... numbers);
-        CompletableFuture<Integer> calculateMeaningOfLife();
+    }
+
+    public class MathFunctionsImpl implements MathFunctions {
+
+        @Override
+        public int multiply(int x, int times) {
+            return x * times;
+        }
+
+        @Override
+        public int add(int... numbers) {
+            int result = 0;
+            for (int number : numbers) {
+                result += number;
+            }
+            return result;
+        }
+
+        @Override
+        public int substract(int from, int... numbers) {
+            int result = from;
+            for (int number : numbers) {
+                result -= number;
+            }
+            return result;
+        }
+
     }
 }

@@ -13,7 +13,7 @@ public class InvocationDescriptor {
      * Name of the targeted handler.
      * Can be used to address specific instances of an implementation class.
      */
-    private String targetName;
+    private String namespace;
 
     /**
      * Method name that should be invoked (always map against the argTypes due to overloading).
@@ -36,16 +36,16 @@ public class InvocationDescriptor {
      */
     private Class<?> returnType;
 
-    public InvocationDescriptor(String targetName, String methodName, Object[] args, Class<?>[] argTypes, Class<?> returnType) {
-        this.targetName = targetName;
+    public InvocationDescriptor(String namespace, String methodName, Object[] args, Class<?>[] argTypes, Class<?> returnType) {
+        this.namespace = namespace;
         this.methodName = methodName;
         this.args = args;
         this.argTypes = argTypes;
         this.returnType = returnType;
     }
 
-    public String getTargetName() {
-        return targetName;
+    public String getNamespace() {
+        return namespace;
     }
 
     public String getMethodName() {

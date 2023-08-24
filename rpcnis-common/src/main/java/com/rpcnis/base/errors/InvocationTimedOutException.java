@@ -11,17 +11,17 @@ public class InvocationTimedOutException extends RuntimeException {
     /**
      * Name of the target that timed out.
      */
-    private final String targetName;
+    private final String namespace;
 
     /**
      * Amount of time in seconds that the invocation was allowed to take.
      */
     private final int timeoutSeconds;
 
-    public InvocationTimedOutException(String methodName, String targetName, int timeoutSeconds) {
-        super("Invocation of method " + methodName + " on target " + targetName + " timed out after " + timeoutSeconds + " seconds.");
+    public InvocationTimedOutException(String methodName, String namespace, int timeoutSeconds) {
+        super("Invocation of method " + methodName + " on target " + namespace + " timed out after " + timeoutSeconds + " seconds.");
         this.methodName = methodName;
-        this.targetName = targetName;
+        this.namespace = namespace;
         this.timeoutSeconds = timeoutSeconds;
     }
 
@@ -35,8 +35,8 @@ public class InvocationTimedOutException extends RuntimeException {
     /**
      * @return Name of the target that timed out.
      */
-    public String getTargetName() {
-        return targetName;
+    public String getNamespace() {
+        return namespace;
     }
 
     /**

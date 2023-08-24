@@ -63,7 +63,7 @@ public class Rpcnis {
         this(transport, new RpcOptions(), new GsonSerializer());
     }
 
-    public <T> T invoke(InvocationDescriptor invocationDescriptor, Class<T> returnType) throws Throwable {
+    public <T> T invokeRemoteMethod(InvocationDescriptor invocationDescriptor, Class<T> returnType) throws Throwable {
         // create a pending invocation
         PendingInvocation<T> pendingInvocation = new PendingInvocation<>(this, invocationDescriptor, () -> {
             // remove the pending invocation from the map

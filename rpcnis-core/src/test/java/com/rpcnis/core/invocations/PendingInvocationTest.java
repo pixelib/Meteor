@@ -32,7 +32,7 @@ public class PendingInvocationTest {
         // base instance
         Rpcnis rpcnis = new Rpcnis(new LoopbackTransport());
 
-        InvocationDescriptor invocationDescriptor = new InvocationDescriptor("targetName", "methodName", new Object[]{}, new Class[]{}, String.class);
+        InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", "methodName", new Object[]{}, new Class[]{}, String.class);
 
         String testString = "test invocation";
 
@@ -46,7 +46,7 @@ public class PendingInvocationTest {
             rpcnis.completeInvocation(invocationDescriptor, testString);
         });
 
-        String response = rpcnis.invoke(invocationDescriptor, String.class);
+        String response = rpcnis.invokeRemoteMethod(invocationDescriptor, String.class);
         assert response.equals(testString);
     }
 
@@ -57,10 +57,10 @@ public class PendingInvocationTest {
         Rpcnis rpcnis = new Rpcnis(new LoopbackTransport());
         rpcnis.getOptions().setTimeoutSeconds(2); // or else it will take 10 seconds to run
 
-        InvocationDescriptor invocationDescriptor = new InvocationDescriptor("targetName", "methodName", new Object[]{}, new Class[]{}, String.class);
+        InvocationDescriptor invocationDescriptor = new InvocationDescriptor("namespace", "methodName", new Object[]{}, new Class[]{}, String.class);
 
         Assertions.assertThrowsExactly(InvocationTimedOutException.class, () -> {
-            rpcnis.invoke(invocationDescriptor, String.class);
+            rpcnis.invokeRemoteMethod(invocationDescriptor, String.class);
         });
 
 
