@@ -13,6 +13,7 @@ import java.util.Base64;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 class RedisTransportTest {
 
     @Test
@@ -88,14 +89,20 @@ class RedisTransportTest {
         String topic = "test";
         String channel = "test_implementation";
 
+        List<AssertionFailedError> assertionErrors = new ArrayList<>();
+
         RedisServer server = RedisServer.newRedisServer()
                 .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
                     System.out.println("command: " + command);
                     System.out.println("params: " + params);
 
-//                    if ("subscribe".equals(command)) {
-//                        assertEquals(channel, params.get(0).toString(), "Channel name is not correct");
-//                    }
+                    try {
+                        if ("subscribe".equals(command)) {
+                            assertEquals(channel, params.get(0).toString(), "Channel name is not correct");
+                        }
+                    } catch (AssertionFailedError e) {
+                        assertionErrors.add(e);
+                    }
                     return MockExecutor.proceed(state, command, params);
                 }))
                 .start();
@@ -105,11 +112,17 @@ class RedisTransportTest {
 
         test.close();
         server.stop();
+
+        if (!assertionErrors.isEmpty()) {
+            throw assertionErrors.get(0);
+        }
     }
+
     @Test
     void getTopicName() {
 
     }
+
     @Test
     void close() {
     }
