@@ -93,6 +93,7 @@ public class TransportHandler {
     }
 
     public void stop() throws IOException {
+        executorPool.shutdown();
         transport.close();
     }
 }
