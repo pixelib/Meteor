@@ -21,6 +21,7 @@ public class SendingUpdateMethod {
 
 
         int result = mathFunctions.add(1, 2, 3, 4, 5);
+        System.out.println("1 + 2 + 3 + 4 + 5 = " + result);
     }
 
     public interface MathFunctions {

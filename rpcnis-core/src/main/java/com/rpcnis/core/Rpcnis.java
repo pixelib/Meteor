@@ -78,7 +78,7 @@ public class Rpcnis {
      * @return A proxy object that implements the given interface.
      */
     public <T> T registerProcedure(Class<T> procedure) {
-        return registerProcedure(procedure, procedure.getSimpleName().toLowerCase(Locale.ROOT));
+        return registerProcedure(procedure, null);
     }
 
     /**

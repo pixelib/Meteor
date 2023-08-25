@@ -107,17 +107,38 @@ public class ReflectionUtil {
 
             for (int i = 0; i < length; i++) {
                 Object argument = allArguments[method.getParameterCount() - 1 + i];
-                if (componentType.isPrimitive()) {
-                    Class<?> wrapperType = PRIMITIVE_TO_BOXED.get(componentType);
-                    if (wrapperType.isInstance(argument)) {
-                        Array.set(array, i, argument);
+
+                // is argument also an array? of so, then check if the component types match
+                if (argument != null && argument.getClass().isArray()) {
+                    Class<?> argumentComponentType = argument.getClass().getComponentType();
+                    if (componentType.isAssignableFrom(argumentComponentType)) {
+                        // loop over argument and push it onto the array
+                        for (int j = 0; j < Array.getLength(argument); j++) {
+                            // is the array big enough? if not, resize it
+                            if (i + j >= length) {
+                                Object newArray = Array.newInstance(componentType, i + j + 1);
+                                System.arraycopy(array, 0, newArray, 0, Array.getLength(array));
+                                array = newArray;
+                            }
+                            Array.set(array, i + j, Array.get(argument, j));
+                        }
                     } else {
-                        // ignore nulls, they are fine
-                        if (argument != null)
-                            throw new RuntimeException("Argument type mismatch. " + wrapperType + " expected, got " + argument.getClass() + " instead.");
+                        throw new RuntimeException("Argument type mismatch. " + componentType + " expected, got " + argumentComponentType + " instead for argument " + i + ".");
                     }
                 } else {
-                    Array.set(array, i, argument);
+
+                    if (componentType.isPrimitive()) {
+                        Class<?> wrapperType = PRIMITIVE_TO_BOXED.get(componentType);
+                        if (wrapperType.isInstance(argument)) {
+                            Array.set(array, i, argument);
+                        } else {
+                            // ignore nulls, they are fine
+                            if (argument != null)
+                                throw new RuntimeException("Argument type mismatch. " + wrapperType + " expected, got " + argument.getClass() + " instead for argument " + i + ".");
+                        }
+                    } else {
+                        Array.set(array, i, argument);
+                    }
                 }
             }
 
