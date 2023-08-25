@@ -7,9 +7,11 @@
         <groupId>com.meteormsg</groupId>
         <artifactId>meteor-parent</artifactId>
         <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>examples</artifactId>
+    <groupId>com.meteormsg.transport.redis</groupId>
+    <artifactId>meteor-jedis</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -20,13 +22,19 @@
     <dependencies>
         <dependency>
             <groupId>com.meteormsg</groupId>
-            <artifactId>meteor-core</artifactId>
+            <artifactId>meteor-common</artifactId>
             <version>${parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
         </dependency>
         <dependency>
             <groupId>com.meteormsg</groupId>
             <artifactId>meteor-common</artifactId>
-            <version>${parent.version}</version>
+            <version>1.0.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

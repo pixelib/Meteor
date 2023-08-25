@@ -4,16 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.rpcnis</groupId>
-    <artifactId>rpcnis-parent</artifactId>
+    <groupId>com.meteormsg</groupId>
+    <artifactId>meteor-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>rpcnis-common</module>
-        <module>rpcnis-core</module>
+        <module>meteor-common</module>
+        <module>meteor-core</module>
         <module>examples</module>
-        <module>rpcnis-jedis</module>
+        <module>meteor-jedis</module>
     </modules>
 
     <properties>

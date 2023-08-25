@@ -1,4 +1,4 @@
-# rpcnis
+# meteor
 A general purpose java RPC library, plugs in like magic
 
 # Design considerations
