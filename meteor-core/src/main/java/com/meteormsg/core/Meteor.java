@@ -10,6 +10,7 @@ import com.meteormsg.core.trackers.IncomingInvocationTracker;
 import com.meteormsg.core.trackers.OutgoingInvocationTracker;
 import com.meteormsg.core.transport.TransportHandler;
 
+import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.util.Timer;
 
@@ -136,7 +137,7 @@ public class Meteor {
     /**
      * Gracefully shutdown the meteor instance.
      */
-    public void stop() {
+    public void stop() throws IOException {
         transportHandler.stop();
         timer.cancel();
     }

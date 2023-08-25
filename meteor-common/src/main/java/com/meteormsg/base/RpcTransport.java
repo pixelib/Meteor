@@ -24,8 +24,4 @@ public interface RpcTransport extends Closeable {
      */
     void subscribe(Direction target, SubscriptionHandler onReceive);
 
-    /**
-     * Gracefully shutdown the transport.
-     */
-    void shutdown();
 }

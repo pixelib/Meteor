@@ -10,6 +10,7 @@ import com.meteormsg.core.transport.packets.InvocationDescriptor;
 import com.meteormsg.core.transport.packets.InvocationResponse;
 import com.meteormsg.core.trackers.OutgoingInvocationTracker;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public class TransportHandler {
@@ -75,7 +76,7 @@ public class TransportHandler {
         return ReadStatus.HANDLED;
     }
 
-    public void stop() {
-        transport.shutdown();
+    public void stop() throws IOException {
+        transport.close();
     }
 }

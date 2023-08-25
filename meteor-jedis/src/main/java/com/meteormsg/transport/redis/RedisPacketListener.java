@@ -4,59 +4,44 @@ import com.meteormsg.base.interfaces.SubscriptionHandler;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RedisPacketListener extends JedisPubSub {
 
+    private final Logger logger;
+
     private final ExecutorService jedisThreadPool = Executors.newCachedThreadPool();
-
-    private final SubscriptionHandler messageBroker;
-
+    private final Map<String, Set<SubscriptionHandler>> messageBrokers = new ConcurrentHashMap<>();
     private final Collection<String> customSubscribedChannels = ConcurrentHashMap.newKeySet();
 
-    public RedisPacketListener(SubscriptionHandler messageBroker, String startChannel) {
-        this.messageBroker = messageBroker;
+    public RedisPacketListener(SubscriptionHandler messageBroker, String startChannel, Logger logger) {
+        this.logger = logger;
+        registerBroker(startChannel, messageBroker);
         customSubscribedChannels.add(startChannel);
     }
 
     @Override
     public void onMessage(String channel, String message) {
-        jedisThreadPool.submit(() -> messageBroker.onPacket(message.getBytes()));
-    }
-
-    @Override
-    public void onPMessage(String s, String s1, String s2) {
-
-    }
-
-    @Override
-    public void onSubscribe(String s, int i) {
-
-    }
-
-    @Override
-    public void onUnsubscribe(String s, int i) {
-
-    }
-
-    @Override
-    public void onPUnsubscribe(String s, int i) {
-
-    }
-
-    @Override
-    public void onPSubscribe(String s, int i) {
-
-    }
-
-    @Override
-    public void subscribe(String... channels) {
-        for (String channel : channels) {
-            if (customSubscribedChannels.add(channel)) {
-                super.subscribe(channel);
+        jedisThreadPool.submit(() -> messageBrokers.get(channel).forEach(subscriptionHandler -> {
+            try {
+                subscriptionHandler.onPacket(message.getBytes());
+            } catch (Exception exception) {
+                logger.log(Level.SEVERE, "Error while handling packet", exception);
             }
+        }));
+    }
+
+    public void subscribe(String channel, SubscriptionHandler onReceive) {
+        registerBroker(channel, onReceive);
+
+        if (customSubscribedChannels.add(channel)) {
+            super.subscribe(channel);
         }
     }
 
@@ -66,5 +51,9 @@ public class RedisPacketListener extends JedisPubSub {
 
     public Collection<String> getCustomSubscribedChannels() {
         return customSubscribedChannels;
+    }
+
+    private void registerBroker(String channel, SubscriptionHandler onReceive) {
+        messageBrokers.computeIfAbsent(channel, key -> ConcurrentHashMap.newKeySet()).add(onReceive);
     }
 }

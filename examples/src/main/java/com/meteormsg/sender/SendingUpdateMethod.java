@@ -5,7 +5,7 @@ import com.meteormsg.core.Meteor;
 
 public class SendingUpdateMethod {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         Meteor meteor = new Meteor(new LoopbackTransport());
         MathFunctions mathFunctions = meteor.registerProcedure(MathFunctions.class);
         MathFunctions mathFunctions2 = meteor.registerProcedure(MathFunctions.class, "Cooler-math-functions");

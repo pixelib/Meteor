@@ -14,11 +14,11 @@ import java.util.logging.Logger;
 
 public class RedisTransport implements RpcTransport {
 
-    private final Set<RedisSubscriptionThread> redisSubscriptionThreads = new ConcurrentSkipListSet<>();
     private final Logger logger = Logger.getLogger(RedisTransport.class.getSimpleName());
 
     private final JedisPool jedisPool;
     private final String topic;
+    private RedisSubscriptionThread redisSubscriptionThread;
 
     public RedisTransport(JedisPool jedisPool, String topic) {
         this.jedisPool = jedisPool;
@@ -44,18 +44,11 @@ public class RedisTransport implements RpcTransport {
 
     @Override
     public void subscribe(Direction direction, SubscriptionHandler onReceive) {
-        RedisSubscriptionThread subscriptionThread = new RedisSubscriptionThread(onReceive, logger, getTopicName(direction), jedisPool);
-        redisSubscriptionThreads.add(subscriptionThread);
-
-        subscriptionThread.start().join();
-
-    }
-
-    @Override
-    public void shutdown() {
-        jedisPool.close();
-        for (RedisSubscriptionThread subscriptionThread : redisSubscriptionThreads) {
-            subscriptionThread.stop();
+        if (redisSubscriptionThread == null) {
+            redisSubscriptionThread = new RedisSubscriptionThread(onReceive, logger, getTopicName(direction), jedisPool);
+            redisSubscriptionThread.start().join();
+        } else {
+            redisSubscriptionThread.subscribe(getTopicName(direction), onReceive);
         }
     }
 
@@ -66,8 +59,6 @@ public class RedisTransport implements RpcTransport {
     @Override
     public void close() throws IOException {
         jedisPool.close();
-        for (RedisSubscriptionThread subscriptionThread : redisSubscriptionThreads) {
-            subscriptionThread.stop();
-        }
+        redisSubscriptionThread.stop();
     }
 }
