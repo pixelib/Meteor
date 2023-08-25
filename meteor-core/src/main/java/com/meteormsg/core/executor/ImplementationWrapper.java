@@ -29,7 +29,7 @@ public class ImplementationWrapper {
             method = findCompatibleDespiteSignature(implementation.getClass().getDeclaredMethods(), methodName, argTypes);
 
             if (method == null) {
-                throw new NoSuchMethodException("No method found with name " + methodName + " and compatible arguments");
+                throw new NoSuchMethodException("No method found with name " + methodName + " and compatible arguments (on " + implementation.getClass().getName() + ").");
             }
         }
 
@@ -72,7 +72,7 @@ public class ImplementationWrapper {
                             match = false;
                             break;
                         }
-                    } else if (!method.getParameterTypes()[i].isAssignableFrom(argTypes[i])) {
+                    } else if (!ArgumentMapper.ensureBoxedClass(method.getParameterTypes()[i]).isAssignableFrom(argTypes[i])) {
                         match = false;
                         break;
                     }

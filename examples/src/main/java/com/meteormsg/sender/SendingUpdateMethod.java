@@ -7,19 +7,20 @@ public class SendingUpdateMethod {
 
     public static void main(String[] args) throws Exception{
         Meteor meteor = new Meteor(new LoopbackTransport());
+
         MathAdd mathAdd = meteor.registerProcedure(MathAdd.class);
-
         MathSubstract mathSubstract = meteor.registerProcedure(MathSubstract.class);
-
-        mathSubstract.substract(10, 1, 2, 3, 4, 5);
 
         // register an implementation, invocations will be dispatched to this object.
         // implementations will be registered under all interfaces they implement
         meteor.registerImplementation(new MathFunctionsImpl());
 
 
-        int result = mathAdd.add(1, 2, 3, 4, 5);
-        System.out.println("1 + 2 + 3 + 4 + 5 = " + result);
+        int subResult = mathSubstract.substract(10, 1, 2, 3, 4, 5);
+        System.out.println("10 - 1 - 2 - 3 - 4 - 5 = " + subResult);
+
+        int addResult = mathAdd.add(1, 2, 3, 4, 5);
+        System.out.println("1 + 2 + 3 + 4 + 5 = " + addResult);
 
         meteor.stop();
     }
