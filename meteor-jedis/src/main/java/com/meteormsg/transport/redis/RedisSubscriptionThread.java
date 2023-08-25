@@ -17,6 +17,7 @@ public class RedisSubscriptionThread {
     private final Logger logger;
     private final String defaultChannel;
     private final JedisPool jedisPool;
+    private boolean isStopping = false;
 
     private RedisPacketListener jedisPacketListener;
 
@@ -49,6 +50,10 @@ public class RedisSubscriptionThread {
                     connection.subscribe(jedisPacketListener, jedisPacketListener.getCustomSubscribedChannels().toArray(new String[]{}));
                     break;
                 } catch (JedisConnectionException e) {
+                    if (isStopping) {
+                        logger.info("Redis connection closed, interrupted by stop");
+                        return;
+                    }
                     logger.log(Level.SEVERE, "Redis has lost connection", e);
                 }
 
@@ -71,6 +76,8 @@ public class RedisSubscriptionThread {
     }
 
     public void stop() {
+        if (isStopping) return;
+        isStopping = true;
         jedisPacketListener.stop();
         listenerThread.shutdownNow();
     }
