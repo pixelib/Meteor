@@ -138,7 +138,7 @@ public class Meteor {
      * Gracefully shutdown the meteor instance.
      */
     public void stop() throws IOException {
-        transportHandler.stop();
+        transportHandler.close();
         timer.cancel();
     }
 

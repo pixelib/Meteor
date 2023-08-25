@@ -9,12 +9,13 @@ import com.meteormsg.core.transport.packets.InvocationDescriptor;
 import com.meteormsg.core.transport.packets.InvocationResponse;
 import com.meteormsg.core.trackers.OutgoingInvocationTracker;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TransportHandler {
+public class TransportHandler implements Closeable {
 
     private final RpcSerializer serializer;
     private final RpcTransport transport;
@@ -22,6 +23,8 @@ public class TransportHandler {
     private final OutgoingInvocationTracker outgoingInvocationTracker;
 
     private final ExecutorService executorPool;
+
+    private boolean isClosed = false;
 
     public TransportHandler(
             RpcSerializer serializer,
@@ -48,6 +51,10 @@ public class TransportHandler {
     }
 
     private boolean handleInvocationRequest(byte[] bytes) throws ClassNotFoundException {
+        if (isClosed) {
+            return false;
+        }
+
         // deserialize the packet
         InvocationDescriptor invocationDescriptor = InvocationDescriptor.fromBuffer(serializer, bytes);
 
@@ -92,7 +99,12 @@ public class TransportHandler {
         return true;
     }
 
-    public void stop() throws IOException {
+    @Override
+    public void close() throws IOException {
+        if (isClosed) {
+            return;
+        }
+        isClosed = true;
         executorPool.shutdown();
         transport.close();
     }
