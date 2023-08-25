@@ -25,4 +25,9 @@ public interface RpcTransport extends Closeable {
      *                  the transport implementation should call the onReceive function, regardless of the ReadStatus.
      */
     void subscribe(Direction target, SubscriptionHandler onReceive);
+
+    /**
+     * Gracefully shutdown the transport.
+     */
+    void shutdown();
 }

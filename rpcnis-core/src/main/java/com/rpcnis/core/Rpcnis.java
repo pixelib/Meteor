@@ -134,4 +134,12 @@ public class Rpcnis {
         registerImplementation(implementation, null);
     }
 
+    /**
+     * Gracefully shutdown the Rpcnis instance.
+     */
+    public void stop() {
+        transportHandler.stop();
+        timer.cancel();
+    }
+
 }

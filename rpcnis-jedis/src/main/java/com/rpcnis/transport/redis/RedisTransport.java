@@ -55,6 +55,14 @@ public class RedisTransport implements RpcTransport {
 
     }
 
+    @Override
+    public void shutdown() {
+        jedisPool.close();
+        for (RedisSubscriptionThread subscriptionThread : redisSubscriptionThreads) {
+            subscriptionThread.stop();
+        }
+    }
+
     public String getTopicName(Direction direction) {
         return topic + "_" + direction.name().toLowerCase(Locale.ROOT);
     }

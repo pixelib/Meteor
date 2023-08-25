@@ -75,4 +75,7 @@ public class TransportHandler {
         return ReadStatus.HANDLED;
     }
 
+    public void stop() {
+        transport.shutdown();
+    }
 }

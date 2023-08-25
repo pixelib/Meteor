@@ -51,6 +51,11 @@ public class LoopbackTransport implements RpcTransport {
         onReceiveFunctions.computeIfAbsent(target, k -> new ArrayList<>()).add(onReceive);
     }
 
+    @Override
+    public void shutdown() {
+        // unused
+    }
+
     /**
      * @throws IOException never thrown, as this is a loopback transport meant for testing so this method is unused
      */
