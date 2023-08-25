@@ -3,6 +3,7 @@ package com.meteormsg.transport.redis;
 import com.meteormsg.base.interfaces.SubscriptionHandler;
 import redis.clients.jedis.JedisPubSub;
 
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class RedisPacketListener extends JedisPubSub {
     public void onMessage(String channel, String message) {
         messageBrokers.get(channel).forEach(subscriptionHandler -> {
             try {
-                subscriptionHandler.onPacket(message.getBytes());
+                subscriptionHandler.onPacket(Base64.getDecoder().decode(message));
             } catch (Exception exception) {
                 logger.log(Level.SEVERE, "Error while handling packet", exception);
             }

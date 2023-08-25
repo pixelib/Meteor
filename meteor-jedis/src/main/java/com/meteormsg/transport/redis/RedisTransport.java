@@ -7,6 +7,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -36,7 +37,7 @@ public class RedisTransport implements RpcTransport {
     @Override
     public void send(Direction direction, byte[] bytes) {
         try (Jedis connection = jedisPool.getResource()) {
-            connection.publish(getTopicName(direction), new String(bytes));
+            connection.publish(getTopicName(direction), Base64.getEncoder().encodeToString(bytes));
         }
     }
 
