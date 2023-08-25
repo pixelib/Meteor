@@ -47,6 +47,7 @@ public class RedisPacketListener extends JedisPubSub {
     }
 
     public void stop() {
+        unsubscribe();
         jedisThreadPool.shutdownNow();
     }
 
