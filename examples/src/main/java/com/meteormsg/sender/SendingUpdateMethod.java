@@ -15,7 +15,6 @@ public class SendingUpdateMethod {
         // implementations will be registered under all interfaces they implement
         meteor.registerImplementation(new MathFunctionsImpl());
 
-
         int subResult = mathSubstract.substract(10, 1, 2, 3, 4, 5);
         System.out.println("10 - 1 - 2 - 3 - 4 - 5 = " + subResult);
 
