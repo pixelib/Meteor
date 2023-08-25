@@ -2,7 +2,6 @@ package com.meteormsg.base.defaults;
 
 import com.meteormsg.base.RpcTransport;
 import com.meteormsg.base.enums.Direction;
-import com.meteormsg.base.enums.ReadStatus;
 import com.meteormsg.base.interfaces.SubscriptionHandler;
 
 import java.io.IOException;
@@ -13,26 +12,23 @@ import java.util.Map;
 
 public class LoopbackTransport implements RpcTransport {
 
-    private Map<Direction, List<SubscriptionHandler>> onReceiveFunctions = new HashMap<>();
+    private final Map<Direction, List<SubscriptionHandler>> onReceiveFunctions = new HashMap<>();
 
     /**
      * @param bytes the bytes to send
      *              bytes given should already been considered as a packet, and should not be further processed by the transport implementation
-     *
      *              this particular implementation will call all the onReceive functions, and stop if one of them returns HANDLED
      *              no actual sending is done, as this is a loopback transport meant for testing
      */
     @Override
     public void send(Direction direction, byte[] bytes) {
         for (SubscriptionHandler onReceiveFunction : onReceiveFunctions.getOrDefault(direction, new ArrayList<>())) {
-            ReadStatus status = null;
             try {
-                status = onReceiveFunction.onPacket(bytes);
+                boolean matched = onReceiveFunction.onPacket(bytes);
+                if (matched) break;
             } catch (Exception e) {
+                // TODO: Add Logger
                 e.printStackTrace();
-            }
-            if (status == ReadStatus.HANDLED) {
-                break;
             }
         }
     }
@@ -55,6 +51,6 @@ public class LoopbackTransport implements RpcTransport {
      */
     @Override
     public void close() throws IOException {
-        // unused
+        // do nothing
     }
 }

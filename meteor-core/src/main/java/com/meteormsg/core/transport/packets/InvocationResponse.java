@@ -53,7 +53,7 @@ public class InvocationResponse {
         return byteArray;
     }
 
-    public static InvocationResponse fromBytes(byte[] bytes, RpcSerializer serializer) throws ClassNotFoundException {
+    public static InvocationResponse fromBytes(RpcSerializer serializer, byte[] bytes) throws ClassNotFoundException {
         ByteBuf buffer = Unpooled.wrappedBuffer(bytes);
         UUID invocationId = new UUID(buffer.readLong(), buffer.readLong());
 

@@ -28,13 +28,13 @@ public class RedisPacketListener extends JedisPubSub {
 
     @Override
     public void onMessage(String channel, String message) {
-        jedisThreadPool.submit(() -> messageBrokers.get(channel).forEach(subscriptionHandler -> {
+        messageBrokers.get(channel).forEach(subscriptionHandler -> {
             try {
                 subscriptionHandler.onPacket(message.getBytes());
             } catch (Exception exception) {
                 logger.log(Level.SEVERE, "Error while handling packet", exception);
             }
-        }));
+        });
     }
 
     public void subscribe(String channel, SubscriptionHandler onReceive) {

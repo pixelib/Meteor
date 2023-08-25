@@ -3,7 +3,6 @@ package com.meteormsg.core.transport;
 import com.meteormsg.base.RpcSerializer;
 import com.meteormsg.base.RpcTransport;
 import com.meteormsg.base.enums.Direction;
-import com.meteormsg.base.enums.ReadStatus;
 import com.meteormsg.core.executor.ImplementationWrapper;
 import com.meteormsg.core.trackers.IncomingInvocationTracker;
 import com.meteormsg.core.transport.packets.InvocationDescriptor;
@@ -30,13 +29,13 @@ public class TransportHandler {
         transport.subscribe(Direction.IMPLEMENTATION, this::handleInvocationRequest);
     }
 
-    private ReadStatus handleInvocationResponse(byte[] bytes) throws ClassNotFoundException {
-        InvocationResponse invocationResponse = InvocationResponse.fromBytes(bytes, serializer);
+    private boolean handleInvocationResponse(byte[] bytes) throws ClassNotFoundException {
+        InvocationResponse invocationResponse = InvocationResponse.fromBytes(serializer, bytes);
         outgoingInvocationTracker.completeInvocation(invocationResponse);
-        return ReadStatus.HANDLED;
+        return true;
     }
 
-    private ReadStatus handleInvocationRequest(byte[] bytes) throws ClassNotFoundException {
+    private boolean handleInvocationRequest(byte[] bytes) throws ClassNotFoundException {
         // deserialize the packet
         InvocationDescriptor invocationDescriptor = InvocationDescriptor.fromBuffer(serializer, bytes);
 
@@ -45,35 +44,27 @@ public class TransportHandler {
 
         // if there is no invocation handler, return
         if (implementations == null || implementations.isEmpty()) {
-            return ReadStatus.UNKNOWN_TARGET;
+            return false;
         }
 
         // if there is an invocation handler, call it
-        Object response = null;
-        boolean found = false;
         for (ImplementationWrapper implementation : implementations) {
             if (invocationDescriptor.getNamespace() != null && !invocationDescriptor.getNamespace().equals(implementation.getNamespace())) {
                 continue;
             }
             try {
-                response = implementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
-                found = true;
+                // move to separate threading
+                Object response = implementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
+                InvocationResponse invocationResponse = new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), response);
+                transport.send(Direction.METHOD_PROXY, invocationResponse.toBytes(serializer));
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
                 // if this happens for all handlers, the origin will eventually get a timeout and just fuck off
-                return ReadStatus.UNKNOWN_TARGET;
+                return false;
             }
         }
 
-        if (!found) {
-            return ReadStatus.UNKNOWN_TARGET;
-        }
-
-        // transmit response
-        InvocationResponse invocationResponse = new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), response);
-        transport.send(Direction.METHOD_PROXY, invocationResponse.toBytes(serializer));
-
-        return ReadStatus.HANDLED;
+        return true;
     }
 
     public void stop() throws IOException {
