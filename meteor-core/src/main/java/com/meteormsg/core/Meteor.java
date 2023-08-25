@@ -16,6 +16,9 @@ import java.util.Timer;
 
 public class Meteor {
 
+    /**
+     * A preconfigured RpcOptions object.
+     */
     private final RpcOptions options;
 
     // Timer for scheduling timeouts and retries
