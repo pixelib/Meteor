@@ -1,7 +1,7 @@
 package com.meteormsg.core.transport.packets;
 
 import com.meteormsg.base.RpcSerializer;
-import com.meteormsg.core.utils.ReflectionUtil;
+import com.meteormsg.core.utils.ArgumentMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -67,7 +67,7 @@ public class InvocationResponse {
             Class<?> resultClass;
             String responseType = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
             if (isPrimitive) {
-                resultClass = ReflectionUtil.resolvePrimitive(responseType);
+                resultClass = ArgumentMapper.resolvePrimitive(responseType);
             } else {
                 resultClass = Class.forName(responseType);
             }

@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class ReflectionUtil {
+public class ArgumentMapper {
 
     /**
      * Map of primitive classes to their boxed counterparts.

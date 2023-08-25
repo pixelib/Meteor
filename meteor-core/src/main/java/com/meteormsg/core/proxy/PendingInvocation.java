@@ -2,7 +2,7 @@ package com.meteormsg.core.proxy;
 
 import com.meteormsg.base.errors.InvocationTimedOutException;
 import com.meteormsg.core.transport.packets.InvocationDescriptor;
-import com.meteormsg.core.utils.ReflectionUtil;
+import com.meteormsg.core.utils.ArgumentMapper;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -57,7 +57,7 @@ public class PendingInvocation<T> extends TimerTask {
         if (!isVoidOrNullable && !invocationDescriptor.getReturnType().isInstance(response)) {
             // is the normal return type primitive? then check if its still assignable as a boxed
             if (invocationDescriptor.getReturnType().isPrimitive()) {
-                if (!ReflectionUtil.ensureBoxedClass(invocationDescriptor.getReturnType()).isAssignableFrom(response.getClass())) {
+                if (!ArgumentMapper.ensureBoxedClass(invocationDescriptor.getReturnType()).isAssignableFrom(response.getClass())) {
                     throw new IllegalStateException("Response is not an instance of the expected return type. " +
                             "Expected: " + invocationDescriptor.getReturnType().getName() + ", " +
                             "Actual: " + response.getClass().getName());

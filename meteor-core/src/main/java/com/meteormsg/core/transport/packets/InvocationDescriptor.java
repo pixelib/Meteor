@@ -1,7 +1,7 @@
 package com.meteormsg.core.transport.packets;
 
 import com.meteormsg.base.RpcSerializer;
-import com.meteormsg.core.utils.ReflectionUtil;
+import com.meteormsg.core.utils.ArgumentMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -138,7 +138,7 @@ public class InvocationDescriptor {
             boolean isPrimitive = buffer.readBoolean();
             String argTypeClassName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
             if (isPrimitive) {
-                argTypes[i] = ReflectionUtil.resolvePrimitive(argTypeClassName);
+                argTypes[i] = ArgumentMapper.resolvePrimitive(argTypeClassName);
             } else {
                 argTypes[i] = Class.forName(argTypeClassName);
             }
@@ -148,7 +148,7 @@ public class InvocationDescriptor {
         String returnTypeName = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
         Class<?> returnType;
         if (isReturnPrimitive) {
-            returnType = ReflectionUtil.resolvePrimitive(returnTypeName);
+            returnType = ArgumentMapper.resolvePrimitive(returnTypeName);
         } else {
             returnType = Class.forName(returnTypeName);
         }

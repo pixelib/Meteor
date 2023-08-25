@@ -7,30 +7,36 @@ public class SendingUpdateMethod {
 
     public static void main(String[] args) throws Exception{
         Meteor meteor = new Meteor(new LoopbackTransport());
-        MathFunctions mathFunctions = meteor.registerProcedure(MathFunctions.class);
-        MathFunctions mathFunctions2 = meteor.registerProcedure(MathFunctions.class, "Cooler-math-functions");
+        MathAdd mathAdd = meteor.registerProcedure(MathAdd.class);
+
+        MathSubstract mathSubstract = meteor.registerProcedure(MathSubstract.class);
+
+        mathSubstract.substract(10, 1, 2, 3, 4, 5);
 
         // register an implementation, invocations will be dispatched to this object.
         // implementations will be registered under all interfaces they implement
         meteor.registerImplementation(new MathFunctionsImpl());
 
-        // you can also register an implementation under a specific namespace
-        meteor.registerImplementation(new MathFunctionsImpl(), "Cooler-math-functions");
 
-
-        int result = mathFunctions.add(1, 2, 3, 4, 5);
+        int result = mathAdd.add(1, 2, 3, 4, 5);
         System.out.println("1 + 2 + 3 + 4 + 5 = " + result);
 
         meteor.stop();
     }
 
-    public interface MathFunctions {
-        int multiply(int x, int times);
+    public interface MathAdd {
         int add(int... numbers);
+    }
+
+    public interface MathSubstract {
         int substract(int from, int... numbers);
     }
 
-    public static class MathFunctionsImpl implements MathFunctions {
+    public interface MathMultiply {
+        int multiply(int x, int times);
+    }
+
+    public static class MathFunctionsImpl implements MathAdd, MathSubstract, MathMultiply {
 
         @Override
         public int multiply(int x, int times) {

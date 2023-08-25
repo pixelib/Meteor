@@ -2,7 +2,7 @@ package com.meteormsg.core.executor;
 
 import com.meteormsg.base.errors.MethodInvocationException;
 import com.meteormsg.core.transport.packets.InvocationDescriptor;
-import com.meteormsg.core.utils.ReflectionUtil;
+import com.meteormsg.core.utils.ArgumentMapper;
 
 import java.lang.reflect.Method;
 
@@ -37,7 +37,7 @@ public class ImplementationWrapper {
         method.setAccessible(true);
 
         // sanitize args
-        Object[] args = ReflectionUtil.overflowArguments(method, invocationDescriptor.getArgs());
+        Object[] args = ArgumentMapper.overflowArguments(method, invocationDescriptor.getArgs());
 
         // invoke method
         try {
@@ -64,8 +64,8 @@ public class ImplementationWrapper {
                 for (int i = 0; i < method.getParameterCount(); i++) {
                     if (i == method.getParameterCount() - 1 && method.getParameterTypes()[i].isArray()) {
                         // if the last parameter is an array, check if the other parameters match
-                        Class<?> arrayType = ReflectionUtil.ensureBoxedClass(method.getParameterTypes()[i].getComponentType());
-                        Class<?> typeOfLastValue = ReflectionUtil.ensureBoxedClass(argTypes[argTypes.length - 1].isArray() ? argTypes[argTypes.length - 1].getComponentType() : argTypes[argTypes.length - 1]);
+                        Class<?> arrayType = ArgumentMapper.ensureBoxedClass(method.getParameterTypes()[i].getComponentType());
+                        Class<?> typeOfLastValue = ArgumentMapper.ensureBoxedClass(argTypes[argTypes.length - 1].isArray() ? argTypes[argTypes.length - 1].getComponentType() : argTypes[argTypes.length - 1]);
 
                         // are all the other parameters assignable to the array type?
                         if (!arrayType.isAssignableFrom(typeOfLastValue)) {
