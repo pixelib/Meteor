@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.meteormsg.transport.redis</groupId>
+    <groupId>com.meteormsg.transport</groupId>
     <artifactId>meteor-jedis</artifactId>
 
     <properties>
@@ -27,14 +27,28 @@
         </dependency>
 
         <dependency>
+            <groupId>com.meteormsg</groupId>
+            <artifactId>meteor-common</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>com.meteormsg</groupId>
-            <artifactId>meteor-common</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.fppt</groupId>
+            <artifactId>jedis-mock</artifactId>
+            <version>1.0.10</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

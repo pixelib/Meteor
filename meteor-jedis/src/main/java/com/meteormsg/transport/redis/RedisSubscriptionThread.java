@@ -20,7 +20,9 @@ public class RedisSubscriptionThread {
 
     private RedisPacketListener jedisPacketListener;
 
-    private final ExecutorService pool = Executors.newSingleThreadExecutor(r -> new Thread(r, "meteor-redis-listener-thread"));
+    private Jedis currentConnection;
+
+    private final ExecutorService listenerThread = Executors.newSingleThreadExecutor(r -> new Thread(r, "meteor-redis-listener-thread"));
 
     public RedisSubscriptionThread(SubscriptionHandler messageBroker, Logger logger, String channel, JedisPool jedisPool) {
         this.messageBroker = messageBroker;
@@ -37,6 +39,8 @@ public class RedisSubscriptionThread {
         Runnable runnable = () -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try (Jedis connection = jedisPool.getResource()) {
+                    this.currentConnection = connection;
+
                     connection.ping();
                     logger.info("Redis connected!");
                     completableFuture.complete(true);
@@ -56,7 +60,7 @@ public class RedisSubscriptionThread {
             }
         };
 
-        pool.execute(runnable);
+        listenerThread.execute(runnable);
 
         return completableFuture;
     }
@@ -67,8 +71,7 @@ public class RedisSubscriptionThread {
     }
 
     public void stop() {
-        jedisPacketListener.unsubscribe();
         jedisPacketListener.stop();
-        pool.shutdownNow();
+        listenerThread.shutdownNow();
     }
 }

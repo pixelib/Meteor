@@ -8,8 +8,6 @@ import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 
 public class RedisTransport implements RpcTransport {
@@ -58,7 +56,10 @@ public class RedisTransport implements RpcTransport {
 
     @Override
     public void close() throws IOException {
+        if (redisSubscriptionThread != null) {
+            redisSubscriptionThread.stop();
+        }
+
         jedisPool.close();
-        redisSubscriptionThread.stop();
     }
 }

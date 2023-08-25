@@ -28,5 +28,10 @@
             <artifactId>meteor-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.meteormsg.transport</groupId>
+            <artifactId>meteor-jedis</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 </project>
