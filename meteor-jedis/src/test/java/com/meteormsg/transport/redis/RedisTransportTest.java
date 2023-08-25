@@ -55,11 +55,18 @@ class RedisTransportTest {
         String channel = "test_method_proxy";
         String message = "cool_message";
 
+        List<AssertionFailedError> assertionErrors = new ArrayList<>();
+
         RedisServer server = RedisServer.newRedisServer()
                 .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
-                    if ("publish".equals(command)) {
-                        assertEquals(channel, params.get(0).toString(), "Channel name is not correct");
-                        assertEquals(message, params.get(1).toString(), "Message is not correct");
+                    try {
+                        if ("publish".equals(command)) {
+                            // loop over all params and print them
+                            assertEquals(channel, params.get(0).toString(), "Channel name is not correct");
+                            assertEquals(message, new String(Base64.getDecoder().decode(params.get(1).data())), "Message is not correct");
+                        }
+                    } catch (AssertionFailedError e) {
+                        assertionErrors.add(e);
                     }
                     return MockExecutor.proceed(state, command, params);
                 }))
@@ -70,6 +77,10 @@ class RedisTransportTest {
 
         test.close();
         server.stop();
+
+        if (!assertionErrors.isEmpty()) {
+            throw assertionErrors.get(0);
+        }
     }
 
     @Test
