@@ -57,28 +57,6 @@ public class ReflectionUtil {
         }
     }
 
-    public static Object toPrimitiveValue(Object input) {
-        if (input instanceof Boolean) {
-            return ((Boolean) input).booleanValue();
-        } else if (input instanceof Byte) {
-            return ((Byte) input).byteValue();
-        } else if (input instanceof Character) {
-            return ((Character) input).charValue();
-        } else if (input instanceof Double) {
-            return ((Double) input).doubleValue();
-        } else if (input instanceof Float) {
-            return ((Float) input).floatValue();
-        } else if (input instanceof Integer) {
-            return ((Integer) input).intValue();
-        } else if (input instanceof Long) {
-            return ((Long) input).longValue();
-        } else if (input instanceof Short) {
-            return ((Short) input).shortValue();
-        } else {
-            throw new RuntimeException("Cannot convert to primitive value");
-        }
-    }
-
     /**
      * Method arguments cannot be mapped one-to-one to an invocation, because the actual signatures
      * may differ from the declared signatures (this can happen with optional arrays, for example).
