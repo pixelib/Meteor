@@ -11,6 +11,8 @@ import com.meteormsg.core.trackers.OutgoingInvocationTracker;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TransportHandler {
 
@@ -19,11 +21,21 @@ public class TransportHandler {
     private final IncomingInvocationTracker incomingInvocationTracker;
     private final OutgoingInvocationTracker outgoingInvocationTracker;
 
-    public TransportHandler(RpcSerializer serializer, RpcTransport transport, IncomingInvocationTracker incomingInvocationTracker, OutgoingInvocationTracker outgoingInvocationTracker) {
+    private final ExecutorService executorPool;
+
+    public TransportHandler(
+            RpcSerializer serializer,
+            RpcTransport transport,
+            IncomingInvocationTracker incomingInvocationTracker,
+            OutgoingInvocationTracker outgoingInvocationTracker,
+            int threadPoolSize
+    ) {
         this.serializer = serializer;
         this.transport = transport;
         this.incomingInvocationTracker = incomingInvocationTracker;
         this.outgoingInvocationTracker = outgoingInvocationTracker;
+
+        this.executorPool = Executors.newFixedThreadPool(threadPoolSize, r -> new Thread(r, "meteor-executor-thread"));
 
         transport.subscribe(Direction.METHOD_PROXY, this::handleInvocationResponse);
         transport.subscribe(Direction.IMPLEMENTATION, this::handleInvocationRequest);
@@ -47,22 +59,35 @@ public class TransportHandler {
             return false;
         }
 
+        ImplementationWrapper matchedImplementation = implementations.stream()
+                .filter(
+                        implementation ->
+                                // Either have matching namespaces
+                                (invocationDescriptor.getNamespace() != null && invocationDescriptor.getNamespace().equals(implementation.getNamespace()))
+                                        ||
+                                        // Or they both don't have namespaces
+                                        (implementation.getNamespace() == null && invocationDescriptor.getNamespace() == null)
+                )
+                .findFirst()
+                .orElse(null);
+
         // if there is an invocation handler, call it
-        for (ImplementationWrapper implementation : implementations) {
-            if (invocationDescriptor.getNamespace() != null && !invocationDescriptor.getNamespace().equals(implementation.getNamespace())) {
-                continue;
-            }
+
+        // We do have handlers for this type, just not by the same name
+        if (matchedImplementation == null) {
+            return false;
+        }
+
+        this.executorPool.submit(() -> {
             try {
                 // move to separate threading
-                Object response = implementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
+                Object response = matchedImplementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
                 InvocationResponse invocationResponse = new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), response);
                 transport.send(Direction.METHOD_PROXY, invocationResponse.toBytes(serializer));
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
-                // if this happens for all handlers, the origin will eventually get a timeout and just fuck off
-                return false;
             }
-        }
+        });
 
         return true;
     }

@@ -35,7 +35,7 @@ public class Meteor {
 
         outgoingInvocationTracker = new OutgoingInvocationTracker(transport, serializer, options, timer);
         incomingInvocationTracker = new IncomingInvocationTracker();
-        transportHandler = new TransportHandler(serializer, transport, incomingInvocationTracker, outgoingInvocationTracker);
+        transportHandler = new TransportHandler(serializer, transport, incomingInvocationTracker, outgoingInvocationTracker, options.getExecutorThreads());
     }
 
     /**

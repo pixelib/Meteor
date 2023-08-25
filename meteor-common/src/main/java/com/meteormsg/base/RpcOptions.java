@@ -13,6 +13,11 @@ public class RpcOptions {
      */
     private ClassLoader classLoader = RpcOptions.class.getClassLoader();
 
+    /**
+     * The number of threads to use for executing methods on the server.
+     */
+    private int executorThreads = 1;
+
     public int getTimeoutSeconds() {
         return timeoutSeconds;
     }
@@ -27,6 +32,14 @@ public class RpcOptions {
 
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
+    }
+
+    public int getExecutorThreads() {
+        return executorThreads;
+    }
+
+    public void setExecutorThreads(int executorThreads) {
+        this.executorThreads = executorThreads;
     }
 
 }
