@@ -58,8 +58,18 @@ and that's it! `parkourScoreboard` is a dynamically generated implementation of 
 
 **[View example code with a local loopback](https://github.com/MeteorMsg/Meteor/blob/main/examples/src/main/java/com/meteormsg/sender/ScoreboardExample.java)**
 
-# Getting started
-*todo, link maven repo's, explain transport options, etc*
+# Parameters
+- *RpcTransport* transport - The transport to use for this Meteor instance (see below, also open to own implementations)
+- *RpcSerializer* serializer - The serializer to use for this Meteor instance (Defaults to a Gson based generic, open to own implementations)
+- *RpcOptions* options
+    - *int* threadPoolSize - The size of the thread pool to use for invocations (defaults to 1)
+    - *int* invocationTimeout - The timeout for invocations (defaults to 30 seconds)
+    - *ClassLoader* classLoader - The classloader to use for dynamically generated classes (defaults to the current thread's context classloader)
+
+# Transport Options
+Current official transport options:
+- `meteor-redis` Which is a Jedis-based Redis transport
+- `loopback` Which is a local loopback transport (for testing)
 
 # Design considerations
 ### To queue or not to queue
