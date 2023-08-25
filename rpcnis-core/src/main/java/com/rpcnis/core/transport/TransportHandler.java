@@ -49,14 +49,23 @@ public class TransportHandler {
 
         // if there is an invocation handler, call it
         Object response = null;
+        boolean found = false;
         for (ImplementationWrapper implementation : implementations) {
+            if (invocationDescriptor.getNamespace() != null && !invocationDescriptor.getNamespace().equals(implementation.getNamespace())) {
+                continue;
+            }
             try {
                 response = implementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
+                found = true;
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
                 // if this happens for all handlers, the origin will eventually get a timeout and just fuck off
                 return ReadStatus.UNKNOWN_TARGET;
             }
+        }
+
+        if (!found) {
+            return ReadStatus.UNKNOWN_TARGET;
         }
 
         // transmit response
