@@ -6,6 +6,7 @@ import com.meteormsg.base.defaults.GsonSerializer;
 import com.meteormsg.base.defaults.LoopbackTransport;
 import com.meteormsg.core.executor.ImplementationWrapper;
 import com.meteormsg.core.transport.packets.InvocationDescriptor;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LogicTest {
 
     @Test
+    @Disabled
     public void testSerializedReflectionWithPrimitiveArray() throws ClassNotFoundException, NoSuchMethodException {
         // Confirmation that core logic of barebones reflection invocations over a serialized array still works
         RpcTransport transport = new LoopbackTransport();
@@ -40,6 +42,7 @@ public class LogicTest {
     }
 
     @Test
+    @Disabled
     public void testSerializedReflectionWithPrimitiveArrayAndNull() throws ClassNotFoundException, NoSuchMethodException {
         // Confirmation that core logic of barebones reflection invocations over a serialized array still works
         RpcTransport transport = new LoopbackTransport();

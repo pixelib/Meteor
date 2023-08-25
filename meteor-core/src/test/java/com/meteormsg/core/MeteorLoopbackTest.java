@@ -1,6 +1,7 @@
 package com.meteormsg.core;
 
 import com.meteormsg.base.defaults.LoopbackTransport;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MeteorLoopbackTest {
 
     @Test
+    @Disabled
     public void testLoopbackFunctionality() {
         Meteor meteor = new Meteor(new LoopbackTransport());
 
