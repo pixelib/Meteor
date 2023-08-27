@@ -11,9 +11,13 @@ import com.meteormsg.core.trackers.OutgoingInvocationTracker;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class TransportHandler implements Closeable {
 
@@ -41,7 +45,7 @@ public class TransportHandler implements Closeable {
         this.executorPool = Executors.newFixedThreadPool(threadPoolSize, r -> new Thread(r, "meteor-executor-thread"));
 
         transport.subscribe(Direction.METHOD_PROXY, this::handleInvocationResponse);
-        transport.subscribe(Direction.IMPLEMENTATION, this::handleInvocationRequest);
+        transport.subscribe(Direction.IMPLEMENTATION, TransportHandler.this::handleInvocationRequest);
     }
 
     private boolean handleInvocationResponse(byte[] bytes) throws ClassNotFoundException {

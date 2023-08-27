@@ -36,6 +36,10 @@ public class RedisTransport implements RpcTransport {
 
     @Override
     public void send(Direction direction, byte[] bytes) {
+        if (jedisPool.isClosed()) {
+            throw new IllegalStateException("Jedis pool is closed");
+        }
+
         try (Jedis connection = jedisPool.getResource()) {
             connection.publish(getTopicName(direction), Base64.getEncoder().encodeToString(bytes));
         }
@@ -43,6 +47,10 @@ public class RedisTransport implements RpcTransport {
 
     @Override
     public void subscribe(Direction direction, SubscriptionHandler onReceive) {
+        if (jedisPool.isClosed()) {
+            throw new IllegalStateException("Jedis pool is closed");
+        }
+
         if (redisSubscriptionThread == null) {
             redisSubscriptionThread = new RedisSubscriptionThread(onReceive, logger, getTopicName(direction), jedisPool);
             redisSubscriptionThread.start().join();

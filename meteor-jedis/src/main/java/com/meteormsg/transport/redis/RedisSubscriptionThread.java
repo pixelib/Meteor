@@ -21,8 +21,6 @@ public class RedisSubscriptionThread {
 
     private RedisPacketListener jedisPacketListener;
 
-    private Jedis currentConnection;
-
     private final ExecutorService listenerThread = Executors.newSingleThreadExecutor(r -> new Thread(r, "meteor-redis-listener-thread"));
 
     public RedisSubscriptionThread(SubscriptionHandler messageBroker, Logger logger, String channel, JedisPool jedisPool) {
@@ -33,18 +31,13 @@ public class RedisSubscriptionThread {
     }
 
     public CompletableFuture<Boolean> start() {
-        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
-
         jedisPacketListener = new RedisPacketListener(messageBroker, defaultChannel, logger);
 
         Runnable runnable = () -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try (Jedis connection = jedisPool.getResource()) {
-                    this.currentConnection = connection;
-
                     connection.ping();
                     logger.info("Redis connected!");
-                    completableFuture.complete(true);
 
                     //Start blocking
                     connection.subscribe(jedisPacketListener, jedisPacketListener.getCustomSubscribedChannels().toArray(new String[]{}));
@@ -67,7 +60,8 @@ public class RedisSubscriptionThread {
 
         listenerThread.execute(runnable);
 
-        return completableFuture;
+        return isSubscribed();
+
     }
 
     public void subscribe(String channel, SubscriptionHandler onReceive) {
@@ -80,5 +74,26 @@ public class RedisSubscriptionThread {
         isStopping = true;
         jedisPacketListener.stop();
         listenerThread.shutdownNow();
+    }
+
+    private CompletableFuture<Boolean> isSubscribed() {
+        return CompletableFuture.supplyAsync(() -> {
+            final int maxAttempts = 5;
+            for (int i = 0; i < maxAttempts; i++) {
+                if (jedisPacketListener.isSubscribed()) {
+                    return true;
+                }
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Thread was interrupted while waiting for subscription", e);
+                }
+            }
+
+            // If it fails to subscribe within 5 attempts (5 seconds), throw an exception
+            throw new IllegalStateException("Failed to subscribe within the given timeframe");
+        });
     }
 }
