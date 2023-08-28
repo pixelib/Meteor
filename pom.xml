@@ -37,6 +37,18 @@
         <developerConnection>scm:git:ssh://github.com/pixelib/Meteor.git</developerConnection>
         <url>https://github.com/pixelib/Meteor/tree/main</url>
     </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     
     <dependencyManagement>
         <dependencies>
