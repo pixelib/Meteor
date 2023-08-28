@@ -3,6 +3,7 @@ package com.meteormsg.core.utils;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Objects;
 
 public class ArgumentMapper {
 
@@ -28,6 +29,7 @@ public class ArgumentMapper {
     }
 
     public static Class<?> resolvePrimitive(final String className) {
+        Objects.requireNonNull(className, "className cannot be null");
         switch (className) {
             case "boolean":
                 return boolean.class;

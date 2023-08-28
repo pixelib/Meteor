@@ -57,7 +57,6 @@ class RedisPacketListenerTest {
     @Test
     void getCustomSubscribedChannels_ThenSuccess() {
         String topic = "test";
-        String message = "message";
 
         RedisPacketListener redisPacketListener = new RedisPacketListener(subscriptionHandler, topic, Logger.getAnonymousLogger());
 
