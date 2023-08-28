@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.meteormsg</groupId>
+        <groupId>dev.pixelib.meteor</groupId>
         <artifactId>meteor-parent</artifactId>
         <version>${revision}</version>
     </parent>
@@ -19,17 +19,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.meteormsg</groupId>
+            <groupId>dev.pixelib.meteor</groupId>
             <artifactId>meteor-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.meteormsg</groupId>
+            <groupId>dev.pixelib.meteor</groupId>
             <artifactId>meteor-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.meteormsg.transport</groupId>
+            <groupId>dev.pixelib.meteor.transport</groupId>
             <artifactId>meteor-jedis</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
