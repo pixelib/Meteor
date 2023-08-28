@@ -1,5 +1,5 @@
 <p align="center">
-<img height="300" src="https://github.com/MeteorMsg/Meteor/assets/10709682/2dd6cb91-7b06-4012-8ccf-df812ff62ffa" />
+<img height="300" src="https://github.com/MeteorMsg.png" />
 </p>
 
 # Meteor
