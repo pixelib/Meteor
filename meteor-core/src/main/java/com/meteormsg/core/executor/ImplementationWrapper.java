@@ -41,6 +41,11 @@ public class ImplementationWrapper {
 
         // invoke method
         try {
+            // Normally, we'd use "returnType.cast" here, but it's technically unsafe.
+            // the cast function does an isInstance check, to make sure that the value is at least a descendant of R,
+            // However.. there are exceptions to this rule, for example, if R is an int and the value is an Integer
+            // then they aren't strictly the same type (due to the jvm boxing/unboxing rules), but the cast will still
+            // succeed. So we use the unchecked cast here, because we know that the value is assignable to R.
             return (R) method.invoke(implementation, args);
         } catch (Exception e) {
             throw new MethodInvocationException(invocationDescriptor.getMethodName(), namespace, e);
