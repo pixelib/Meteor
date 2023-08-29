@@ -4,7 +4,7 @@
  This document will go over the performance overhead incurred from Meteor remote invocations, how to optimize your application and other possible hurdles to consider.
 
 ## 2. Testing Environment
-The benchmarks presented here have been run on a `specs here`, and the results are the average of 5 runs (with 5 warmup runs per test). The benchmarks themselves are based on [OpenJDK's JMH](https://github.com/openjdk/jmh) and you can run them yourself through within the `benchmarks` folder.
+The benchmarks presented here have been run on a `Ryzen 7 3700x 32gb ddr4 3200mhz`, and the results are the average of 5 runs (with 5 warmup runs per test). The benchmarks themselves are based on [OpenJDK's JMH](https://github.com/openjdk/jmh) and you can run them yourself through within the `benchmarks` folder.
 
 All tests have been run with a local loopback configuration. This means that all 'packets' have been locally evaluated and no network overhead has been incurred, however, serialization and deserialization overhead is still present.
 
