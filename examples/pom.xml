@@ -24,11 +24,6 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>dev.pixelib.meteor</groupId>
-            <artifactId>meteor-common</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
             <groupId>dev.pixelib.meteor.transport</groupId>
             <artifactId>meteor-jedis</artifactId>
             <version>${project.parent.version}</version>
