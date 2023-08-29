@@ -17,8 +17,8 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           overwrite-settings: true
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
       - name: Publish package
         run: mvn -Drevision=${{ github.event.release.tag_name }} --batch-mode deploy
-        env:
-          MAVEN_USERNAME: '${{ secrets.OSSRH_USERNAME }}'
-          MAVEN_PASSWORD: '${{ secrets.OSSRH_TOKEN }}'
