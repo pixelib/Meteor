@@ -20,5 +20,13 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+      - uses: s4u/maven-settings-action@v2.8.0
+        with:
+          servers: |
+            [{
+                "id": "ossrh",
+                "username": "${{ secrets.OSSRH_USERNAME }}",
+                "password": "${{ secrets.OSSRH_TOKEN }}"
+            }]
       - name: Publish package
         run: mvn -Drevision=${{ github.event.release.tag_name }} --batch-mode deploy
