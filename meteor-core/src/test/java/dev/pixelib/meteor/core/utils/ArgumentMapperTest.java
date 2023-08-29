@@ -1,6 +1,7 @@
 package dev.pixelib.meteor.core.utils;
 
 import dev.pixelib.meteor.core.Meteor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -92,6 +93,7 @@ class ArgumentMapperTest {
         private void multipleParamsMethod(Integer integer, String str, Double dd) { }
         private void oneArrayMethod(int[] a) { }
         private void optionalArrayMethod(int a, int... b) {}
+        private void sampleMethod(String a, Integer... b) {}
     }
 
     private static Stream<Arguments> provideArgumentsForTest() throws NoSuchMethodException {
@@ -123,5 +125,20 @@ class ArgumentMapperTest {
     @NullAndEmptySource
     void testOverflowArguments_WithEmptyOrNullExceptions(Object[] allArguments) {
         assertThrows(NullPointerException.class, () -> ArgumentMapper.overflowArguments(null, allArguments));
+    }
+
+    @Test
+    void testOverflowArguments() throws NoSuchMethodException {
+        Method method = Example.class.getDeclaredMethod("sampleMethod", String.class, Integer[].class);
+        final Object[] allArguments = new Object[] { "test", new Integer[] {1, 2, 3}, new Integer[] {4, 5, 6}};
+
+        //Valid path
+        Assertions.assertDoesNotThrow(() -> ArgumentMapper.overflowArguments(method, allArguments));
+
+        //Invalid path - Type mismatch
+        Object[] allArguments2 = new Object[] { "test", new Boolean[] {true, false}, new Integer[] {4, 5, 6}};
+        Assertions.assertThrows(RuntimeException.class,
+                () -> ArgumentMapper.overflowArguments(method, allArguments2),
+                "Argument type mismatch. java.lang.Integer expected, got java.lang.Boolean instead for argument 0.");
     }
 }
