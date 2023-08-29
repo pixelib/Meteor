@@ -9,7 +9,7 @@ The benchmarks presented here have been run on a `Ryzen 7 3700x 32gb ddr4 3200mh
 All tests have been run with a local loopback configuration. This means that all 'packets' have been locally evaluated and no network overhead has been incurred, however, serialization and deserialization overhead is still present.
 
 Invocation time is therefore not fully representative of a real-world scenario, but it is still a good indicator of the overhead incurred by Meteor.
-If you want a more realistic benchmark, you can run the tests with a remote configuration (like redis), or your network RTT (round-trip time) to the server being added to each invocation time.
+If you want a more realistic benchmark, you can run the tests with a remote configuration (like redis), or imagine adding your network RTT (round-trip time) to each invocation time.
 
 All benchmarks have been run with 1, 10 and 50 worker threads. This means that the meteor receiver was able to process 1, 10 and 50 invocations concurrently.
 Keep an eye on the results for the 1 thread case, as it is more representative of implementations where locking is used. The 10 and 50 thread cases are more representative of implementations where resources are not shared between threads.
