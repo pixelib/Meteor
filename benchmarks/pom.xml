@@ -23,17 +23,17 @@
         <dependency>
             <groupId>dev.pixelib.meteor</groupId>
             <artifactId>meteor-core</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>dev.pixelib.meteor</groupId>
             <artifactId>meteor-common</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>dev.pixelib.meteor.transport</groupId>
             <artifactId>meteor-jedis</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
@@ -90,6 +90,14 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
 
         </plugins>

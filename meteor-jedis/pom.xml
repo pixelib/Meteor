@@ -23,7 +23,7 @@
         <dependency>
             <groupId>dev.pixelib.meteor</groupId>
             <artifactId>meteor-common</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
