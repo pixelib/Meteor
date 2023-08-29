@@ -71,6 +71,10 @@ Current official transport options:
 - `meteor-redis` Which is a Jedis-based Redis transport
 - `loopback` Which is a local loopback transport (for testing)
 
+# Performance
+Meteor is designed to be as fast as possible, and the overhead incurred by Meteor is minimal.
+A full performance analysis can be found [here](PERFORMANCE.md)
+
 # Design considerations
 ### To queue or not to queue
 The library itself is unopinionated about transport and thus execution.
