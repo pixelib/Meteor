@@ -12,6 +12,8 @@ It allows you to write your application against your interface as if it's local 
 <img src=".github/assets/flow.png" />
 </p>
 
+> *Note that this diagram ommits certain parts, like scheduling/threading and abstracted serailization layers to make it more readable.*
+
 
 # Usage
 Let's say that you have an interface like this;
