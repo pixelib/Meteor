@@ -8,6 +8,11 @@
 Meteor is designed to fill the (physical) gap between application instances and remote services where applications need to interface with a service that may be available locally or be provided by a remote JVM instance.
 It allows you to write your application against your interface as if it's local code and either supply the implementation locally (like you would with any other interface) or tunnel it through a transport layer (like Redis), without needing to design API specifications or write any networking logic.
 
+<p align="center">
+<img src=".github/assets/flow.png" />
+</p>
+
+
 # Usage
 Let's say that you have an interface like this;
 ```java
