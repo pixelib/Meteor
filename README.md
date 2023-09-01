@@ -63,7 +63,7 @@ Scoreboard parkourScoreboard = meteor.registerProcedure(Scoreboard.class, "parko
 
 and that's it! `parkourScoreboard` is a dynamically generated implementation of the Scoreboard class, mapping to our `ScoreboardImplementation` running in the other process. All methods are blocking and function *exactly* like they would if you're calling them on a local instance. This allows you to run a single instance if you want, or easily scale your code across multiple processes without having to worry about any of the details.
 
-**[View example code with a local loopback](https://github.com/MeteorMsg/Meteor/blob/main/examples/src/main/java/com/meteormsg/sender/ScoreboardExample.java)**
+**[View example code with a local loopback](https://github.com/pixelib/Meteor/blob/main/examples/src/main/java/dev/pixelib/meteor/sender/ScoreboardExample.java)**
 
 # Parameters
 - *RpcTransport* transport - The transport to use for this Meteor instance (see below, also open to own implementations)
