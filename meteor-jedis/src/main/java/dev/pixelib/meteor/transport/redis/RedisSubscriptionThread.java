@@ -6,6 +6,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -21,7 +22,11 @@ public class RedisSubscriptionThread {
 
     private RedisPacketListener jedisPacketListener;
 
-    private final ExecutorService listenerThread = Executors.newSingleThreadExecutor(r -> new Thread(r, "meteor-redis-listener-thread"));
+    private final ExecutorService listenerThread = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "meteor-redis-listener-thread");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     public RedisSubscriptionThread(SubscriptionHandler messageBroker, Logger logger, String channel, JedisPool jedisPool) {
         this.messageBroker = messageBroker;
@@ -37,14 +42,14 @@ public class RedisSubscriptionThread {
             while (!Thread.currentThread().isInterrupted()) {
                 try (Jedis connection = jedisPool.getResource()) {
                     connection.ping();
-                    logger.info("Redis connected!");
+                    logger.log(Level.FINE, "Redis connected!");
 
                     //Start blocking
                     connection.subscribe(jedisPacketListener, jedisPacketListener.getCustomSubscribedChannels().toArray(new String[]{}));
                     break;
                 } catch (JedisConnectionException e) {
                     if (isStopping) {
-                        logger.info("Redis connection closed, interrupted by stop");
+                        logger.log(Level.FINE, "Redis connection closed, interrupted by stop");
                         return;
                     }
                     logger.log(Level.SEVERE, "Redis has lost connection", e);
@@ -88,7 +93,7 @@ public class RedisSubscriptionThread {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    throw new RuntimeException("Thread was interrupted while waiting for subscription", e);
+                    throw new CompletionException("Thread was interrupted while waiting for subscription", e);
                 }
             }
 

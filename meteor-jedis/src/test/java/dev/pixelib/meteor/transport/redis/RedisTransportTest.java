@@ -7,18 +7,17 @@ import dev.pixelib.meteor.base.enums.Direction;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RedisTransportTest {
 
     @Test
-    void sendValidImplementation_thenSuccess() throws IOException {
+    void send_validImplementation() throws IOException {
         String topic = "test";
         String channel = "test_implementation";
         String message = "cool_message";
@@ -52,7 +51,7 @@ class RedisTransportTest {
     }
 
     @Test
-    void sendValidMethodProxy_thenSuccess() throws IOException {
+    void send_validMethodProxy() throws IOException {
         String topic = "test";
         String channel = "test_method_proxy";
         String message = "cool_message";
@@ -86,7 +85,7 @@ class RedisTransportTest {
     }
 
     @Test
-    void subscribeImplementation_thenSuccess() throws IOException, InterruptedException {
+    void subscribe_implementation() throws IOException, InterruptedException {
         String topic = "test";
         String channel = "test_implementation";
 
@@ -117,7 +116,7 @@ class RedisTransportTest {
     }
 
     @Test
-    void subscribeMethodProxy_thenSuccess() throws IOException {
+    void subscribe_methodProxy() throws IOException {
         String topic = "test";
         String channel = "test_method_proxy";
 
@@ -148,7 +147,35 @@ class RedisTransportTest {
     }
 
     @Test
-    void getTopicNameWithImplementationDirection_ThenSuccess() throws IOException {
+    void subscribe_secondSubscription() throws IOException {
+        String topic = "test";
+        String channelProxy = "test_method_proxy";
+        String channelImpl = "test_implementation";
+
+        Collection<String> subscribedChannels = new HashSet<>();
+
+        RedisServer server = RedisServer.newRedisServer()
+                .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
+                    if ("subscribe".equals(command)) {
+                        subscribedChannels.add(params.get(0).toString());
+                    }
+                    return MockExecutor.proceed(state, command, params);
+                }))
+                .start();
+
+        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
+        transport.subscribe(Direction.METHOD_PROXY, packet -> true);
+        transport.subscribe(Direction.IMPLEMENTATION, packet -> true);
+
+        transport.close();
+        server.stop();
+
+        assertTrue(subscribedChannels.contains(channelProxy));
+        assertTrue(subscribedChannels.contains(channelImpl));
+    }
+
+    @Test
+    void getTopicName_withImplementationDirection() throws IOException {
         String topic = "test";
         String expected = "test_implementation";
 
@@ -165,7 +192,7 @@ class RedisTransportTest {
     }
 
     @Test
-    void getTopicNameWithMethodProxy_ThenSuccess() throws IOException {
+    void getTopicName_withMethodProxy() throws IOException {
         String topic = "test";
         String expected = "test_method_proxy";
 
@@ -184,7 +211,7 @@ class RedisTransportTest {
 
 
     @Test
-    void getTopicNameWithNull_ThenFail() throws IOException {
+    void getTopic_nameWithNull() throws IOException {
         String topic = "test";
 
         RedisServer server = RedisServer.newRedisServer().start();
@@ -201,7 +228,7 @@ class RedisTransportTest {
     }
 
     @Test
-    void close_ThenSuccess() throws IOException  {
+    void close_success() throws IOException  {
         String topic = "test";
 
         RedisServer server = RedisServer.newRedisServer().start();
@@ -225,7 +252,7 @@ class RedisTransportTest {
 
 
     @Test
-    void closeWhenAlreadyClosed_ThenSuccess() throws IOException  {
+    void close_whenAlreadyClosed() throws IOException  {
         String topic = "test";
 
         RedisServer server = RedisServer.newRedisServer().start();
@@ -237,6 +264,35 @@ class RedisTransportTest {
         server.stop();
 
         assertTrue(jedisPool.isClosed());
+    }
+
+    @Test
+    void construct_withJedisPool() throws IOException  {
+        String topic = "test";
+
+        RedisServer server = RedisServer.newRedisServer().start();
+
+        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
+        RedisTransport transport = new RedisTransport(jedisPool, topic);
+
+        assertFalse(jedisPool.isClosed());
+
+        transport.close();
+        server.stop();
+
+        assertTrue(jedisPool.isClosed());
+    }
+    @Test
+    void construct_withUrl() throws IOException  {
+        String topic = "test";
+
+        RedisServer server = RedisServer.newRedisServer().start();
+
+        RedisTransport transport = new RedisTransport("redis://" + server.getHost() + ":" + server.getBindPort(), topic);
+        assertNotNull(transport);
+
+        transport.close();
+        server.stop();
 
     }
 }
