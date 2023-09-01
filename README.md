@@ -14,6 +14,27 @@ It allows you to write your application against your interface as if it's local 
 
 > *Note that this diagram ommits certain parts, like scheduling/threading and abstracted serailization layers to make it more readable.*
 
+# Installation
+Meteor comes by default with a local loopback transport.
+Meteor is available on Maven Central, and can be installed by adding the following dependency to your `pom.xml` file:
+```xml
+<dependency>
+  <groupId>dev.pixelib.meteor</groupId>
+  <artifactId>meteor-core</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+## Transports
+For the time being, only Jedis transport layer is supported, but more transports are planned for the future.
+You can install the Redis transport by adding the following dependency to your `pom.xml` file:
+```xml
+<dependency>
+  <groupId>dev.pixelib.meteor.transport</groupId>
+  <artifactId>meteor-jedis</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 # Usage
 Let's say that you have an interface like this;

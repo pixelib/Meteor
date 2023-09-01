@@ -13,10 +13,6 @@
 
     <artifactId>meteor-core</artifactId>
 
-    <properties>
-        <meteor-serializer.version>${revision}</meteor-serializer.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.netty</groupId>
@@ -26,7 +22,8 @@
         <dependency>
             <groupId>dev.pixelib.meteor</groupId>
             <artifactId>meteor-common</artifactId>
-            <version>${meteor-serializer.version}</version>
+            <version>${revision}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
