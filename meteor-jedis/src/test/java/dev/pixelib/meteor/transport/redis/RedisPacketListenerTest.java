@@ -47,8 +47,11 @@ class RedisPacketListenerTest {
         byte[] expected = Base64.getDecoder().decode(message);
 
 
-        SubscriptionHandler handler = packet -> {
-            throw new NullPointerException();
+        SubscriptionHandler handler = new SubscriptionHandler() {
+            @Override
+            public boolean onPacket(byte[] packet) throws Exception {
+                throw new NullPointerException();
+            }
         };
 
         SubscriptionHandler handlerSub = spy(handler);
@@ -92,7 +95,7 @@ class RedisPacketListenerTest {
         runner.start();
 
         while(!redisPacketListener.isSubscribed()) {
-            Thread.sleep(10);
+            Thread.sleep(20);
         }
 
         redisPacketListener.subscribe(newTopic, subscriptionHandler);
@@ -102,7 +105,7 @@ class RedisPacketListenerTest {
         redisPacketListener.stop();
 
         while(redisPacketListener.isSubscribed()) {
-            Thread.sleep(10);
+            Thread.sleep(20);
         }
 
         jedisPool.close();
@@ -131,7 +134,7 @@ class RedisPacketListenerTest {
         runner.start();
 
         while(!redisPacketListener.isSubscribed()) {
-            Thread.sleep(10);
+            Thread.sleep(20);
         }
 
         redisPacketListener.stop();
