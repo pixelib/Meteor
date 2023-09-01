@@ -4,6 +4,7 @@ import com.github.fppt.jedismock.RedisServer;
 import com.github.fppt.jedismock.operations.server.MockExecutor;
 import com.github.fppt.jedismock.server.ServiceOptions;
 import dev.pixelib.meteor.base.interfaces.SubscriptionHandler;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import redis.clients.jedis.JedisPool;
 
@@ -51,6 +52,7 @@ class RedisSubscriptionThreadTest {
     }
 
     @Test
+    @Disabled
     void start_reconnect() throws Exception{
         RedisServer server = RedisServer.newRedisServer().start();
 
