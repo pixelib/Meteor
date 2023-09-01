@@ -48,4 +48,11 @@ jobs:
         echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
         echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
 
-    - uses: stefanzweifel/git-auto-commit-action@v4
+    - name: Run the Action
+      uses: devops-infra/action-commit-push@master
+      with:
+        github_token: "${{ secrets.GITHUB_TOKEN }}"
+        add_timestamp: true
+        commit_prefix: "[CHORE]"
+        commit_message: "Update jacoco badge"
+        force: false
