@@ -2,7 +2,7 @@
 <img height="150" src="https://github.com/pixelib/Meteor/assets/10709682/d2a36e0a-38d5-43b7-a33b-600834559e46" />
 </p>
 
-# Meteor
+# Meteor ![branches](.github/badges/branches.svg) ![jacoco coverage](.github/badges/jacoco.svg)
 > A general-purpose Java RPC library that plugs in like magic
 
 Meteor is designed to fill the (physical) gap between application instances and remote services where applications need to interface with a service that may be available locally or be provided by a remote JVM instance.

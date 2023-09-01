@@ -9,6 +9,33 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
 
+    <name>Meteor</name>
+    <description>Meteor is a lightweight, fast and easy to use Java RPC library.</description>
+    <url>https://github.com/pixelib/Meteor</url>
+
+    <developers>
+        <developer>
+            <id>duco</id>
+            <name>Duco</name>
+            <organization>duckelekuuk</organization>
+            <organizationUrl>https://github.com/Duckelekuuk</organizationUrl>
+            <email>contact@duckelekuuk.com</email>
+        </developer>
+        <developer>
+            <id>mats</id>
+            <name>Mats</name>
+            <organization>Mindgamesnl</organization>
+            <organizationUrl>https://github.com/Duckelekuuk</organizationUrl>
+            <email>mats@toetmats.nl</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/pixelib/Meteor.git</connection>
+        <developerConnection>scm:git:ssh://github.com/pixelib/Meteor.git</developerConnection>
+        <url>https://github.com/pixelib/Meteor</url>
+    </scm>
+
     <modules>
         <module>meteor-common</module>
         <module>meteor-core</module>
@@ -31,12 +58,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <scm>
-        <connection>scm:git:git@github.com/pixelib/Meteor.git</connection>
-        <developerConnection>scm:git:ssh://github.com/pixelib/Meteor.git</developerConnection>
-        <url>https://github.com/pixelib/Meteor/tree/main</url>
-    </scm>
 
     <distributionManagement>
         <snapshotRepository>
