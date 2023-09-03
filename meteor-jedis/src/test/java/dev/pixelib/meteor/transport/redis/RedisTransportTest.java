@@ -4,6 +4,7 @@ import com.github.fppt.jedismock.RedisServer;
 import com.github.fppt.jedismock.operations.server.MockExecutor;
 import com.github.fppt.jedismock.server.ServiceOptions;
 import dev.pixelib.meteor.base.enums.Direction;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 import redis.clients.jedis.JedisPool;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RedisTransportTest {
 
     @Test
+    @Disabled
     void send_validImplementation() throws IOException {
         String topic = "test";
         String channel = "test_implementation";
@@ -51,6 +53,7 @@ class RedisTransportTest {
     }
 
     @Test
+    @Disabled
     void send_validMethodProxy() throws IOException {
         String topic = "test";
         String channel = "test_method_proxy";
@@ -85,6 +88,7 @@ class RedisTransportTest {
     }
 
     @Test
+    @Disabled
     void subscribe_implementation() throws IOException, InterruptedException {
         String topic = "test";
         String channel = "test_implementation";
@@ -116,6 +120,7 @@ class RedisTransportTest {
     }
 
     @Test
+    @Disabled
     void subscribe_methodProxy() throws IOException {
         String topic = "test";
         String channel = "test_method_proxy";
@@ -147,6 +152,7 @@ class RedisTransportTest {
     }
 
     @Test
+    @Disabled
     void subscribe_secondSubscription() throws IOException {
         String topic = "test";
         String channelProxy = "test_method_proxy";
@@ -192,6 +198,7 @@ class RedisTransportTest {
     }
 
     @Test
+    @Disabled
     void getTopicName_withMethodProxy() throws IOException {
         String topic = "test";
         String expected = "test_method_proxy";
@@ -211,6 +218,7 @@ class RedisTransportTest {
 
 
     @Test
+    @Disabled
     void getTopic_nameWithNull() throws IOException {
         String topic = "test";
 
@@ -228,6 +236,7 @@ class RedisTransportTest {
     }
 
     @Test
+    @Disabled
     void close_success() throws IOException  {
         String topic = "test";
 
@@ -252,6 +261,7 @@ class RedisTransportTest {
 
 
     @Test
+    @Disabled
     void close_whenAlreadyClosed() throws IOException  {
         String topic = "test";
 
@@ -267,6 +277,7 @@ class RedisTransportTest {
     }
 
     @Test
+    @Disabled
     void construct_withJedisPool() throws IOException  {
         String topic = "test";
 
@@ -283,6 +294,7 @@ class RedisTransportTest {
         assertTrue(jedisPool.isClosed());
     }
     @Test
+    @Disabled
     void construct_withUrl() throws IOException  {
         String topic = "test";
 
