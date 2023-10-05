@@ -1,8 +1,8 @@
 package dev.pixelib.meteor.core;
 
 import dev.pixelib.meteor.base.defaults.LoopbackTransport;
-import org.junit.jupiter.api.Test;
 import dev.pixelib.meteor.core.utils.MathFunctions;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
 

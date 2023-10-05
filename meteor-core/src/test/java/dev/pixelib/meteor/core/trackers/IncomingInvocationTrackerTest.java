@@ -1,8 +1,8 @@
 package dev.pixelib.meteor.core.trackers;
 
 import dev.pixelib.meteor.core.executor.ImplementationWrapper;
-import org.junit.jupiter.api.Test;
 import dev.pixelib.meteor.core.utils.MathFunctions;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
