@@ -4,7 +4,7 @@ import dev.pixelib.meteor.base.RpcSerializer;
 import dev.pixelib.meteor.base.defaults.GsonSerializer;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InvocationDescriptorTest {
 

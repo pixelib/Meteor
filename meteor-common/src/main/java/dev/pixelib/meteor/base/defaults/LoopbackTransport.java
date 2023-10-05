@@ -6,17 +6,17 @@ import dev.pixelib.meteor.base.interfaces.SubscriptionHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 public class LoopbackTransport implements RpcTransport {
 
-    private final Map<Direction, List<SubscriptionHandler>> onReceiveFunctions = new HashMap<>();
+    private final Map<Direction, List<SubscriptionHandler>> onReceiveFunctions = new EnumMap<>(Direction.class);
 
     /**
      * @param bytes the bytes to send
-     *              bytes given should already been considered as a packet, and should not be further processed by the transport implementation
+     *              bytes given should already been considered as a packet, and should1not be further processed by the transport implementation
      *              this particular implementation will call all the onReceive functions, and stop if one of them returns HANDLED
      *              no actual sending is done, as this is a loopback transport meant for testing
      */
