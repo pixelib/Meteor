@@ -2,7 +2,7 @@
 <img height="150" src="https://github.com/pixelib/Meteor/assets/10709682/d2a36e0a-38d5-43b7-a33b-600834559e46" />
 </p>
 
-# Meteor ![branches](.github/badges/branches.svg) ![jacoco coverage](.github/badges/jacoco.svg)
+# Meteor ![Maven Central](https://img.shields.io/maven-central/v/dev.pixelib.meteor/meteor-parent) ![branches](.github/badges/branches.svg) ![jacoco coverage](.github/badges/jacoco.svg)
 > A general-purpose Java RPC library that plugs in like magic
 
 Meteor is designed to fill the (physical) gap between application instances and remote services where applications need to interface with a service that may be available locally or be provided by a remote JVM instance.
@@ -12,7 +12,7 @@ It allows you to write your application against your interface as if it's local 
 <img src=".github/assets/flow.png" />
 </p>
 
-> *Note that this diagram ommits certain parts, like scheduling/threading and abstracted serailization layers to make it more readable.*
+> *Note that this diagram omits certain parts, like scheduling/threading and abstracted serialization layers to make it more readable.*
 
 # Installation
 Meteor comes by default with a local loopback transport.
@@ -21,7 +21,7 @@ Meteor is available on Maven Central, and can be installed by adding the followi
 <dependency>
   <groupId>dev.pixelib.meteor</groupId>
   <artifactId>meteor-core</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
@@ -32,7 +32,7 @@ You can install the Redis transport by adding the following dependency to your `
 <dependency>
   <groupId>dev.pixelib.meteor.transport</groupId>
   <artifactId>meteor-jedis</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
@@ -105,7 +105,7 @@ A full performance analysis can be found [here](PERFORMANCE.md)
 
 # Design considerations
 ### To queue or not to queue
-The library itself is unopinionated about transport and thus execution.
+The library itself is un opinionated about transport and thus execution.
 It's up to the specific transport implementation to decide whether a fan-out or queueing strategy is appropriate. The default Redis implementation uses a normal broadcast, meaning that all invocations will be executed on all nodes which provide an implementation (but only the first return value is returned to the invoker function). Other implementations may use a more sophisticated queueing mechanism, allowing implementation instances to only process a subset of the invocations.
 
 ### Error handling
@@ -115,5 +115,5 @@ Invocations leading to an exception on the implementation are considered as not 
 Each Meteor instance uses its own internal thread pool for invocations against implementations. Invocations are queued up (in order of invocation time) if an implementation is busy. The thread pool size can be configured through the `RpcOptions`, and defaults to `1`.
 
 ### To serialize or not to serialize
-The library itself is unopinionated about serialization.
+The library itself is un opinionated about serialization.
 GSON gets used by default, but you can use any other serialization library you want, as long as it can serialize and deserialize generic types with another fallback method for unknown types.
