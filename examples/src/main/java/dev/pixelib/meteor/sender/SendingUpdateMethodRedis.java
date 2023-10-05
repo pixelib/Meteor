@@ -10,6 +10,7 @@ public class SendingUpdateMethodRedis {
 
         MathAdd mathAdd = meteor.registerProcedure(MathAdd.class);
         MathSubstract mathSubstract = meteor.registerProcedure(MathSubstract.class);
+        MathMultiply mathMultiply = meteor.registerProcedure(MathMultiply.class);
 
         // register an implementation, invocations will be dispatched to this object.
         // implementations will be registered under all interfaces they implement
@@ -21,6 +22,9 @@ public class SendingUpdateMethodRedis {
 
         int addResult = mathAdd.add(1, 2, 3, 4, 5);
         System.out.println("1 + 2 + 3 + 4 + 5 = " + addResult);
+
+        int multiResult = mathMultiply.multiply(5, 5);
+        System.out.println("5 * 5 = " + multiResult);
 
         meteor.stop();
     }
