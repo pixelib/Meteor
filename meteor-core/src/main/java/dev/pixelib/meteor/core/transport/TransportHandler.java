@@ -14,9 +14,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TransportHandler implements Closeable {
 
+    private final Logger logger = Logger.getLogger(TransportHandler.class.getSimpleName());
     private final RpcSerializer serializer;
     private final RpcTransport transport;
     private final IncomingInvocationTracker incomingInvocationTracker;
@@ -91,8 +94,8 @@ public class TransportHandler implements Closeable {
                 Object response = matchedImplementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
                 InvocationResponse invocationResponse = new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), response);
                 transport.send(Direction.METHOD_PROXY, invocationResponse.toBytes(serializer));
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+            } catch (Throwable e) {
+                logger.log(Level.SEVERE, "An error occurred while invoking a method", e);
             }
         });
 
