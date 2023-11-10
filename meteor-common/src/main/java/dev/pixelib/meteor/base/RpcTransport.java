@@ -1,7 +1,7 @@
 package dev.pixelib.meteor.base;
 
-import dev.pixelib.meteor.base.interfaces.SubscriptionHandler;
 import dev.pixelib.meteor.base.enums.Direction;
+import dev.pixelib.meteor.base.interfaces.SubscriptionHandler;
 
 import java.io.Closeable;
 

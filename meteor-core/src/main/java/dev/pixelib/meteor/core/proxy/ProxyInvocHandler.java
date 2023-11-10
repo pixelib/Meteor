@@ -1,7 +1,7 @@
 package dev.pixelib.meteor.core.proxy;
 
-import dev.pixelib.meteor.core.transport.packets.InvocationDescriptor;
 import dev.pixelib.meteor.core.trackers.OutgoingInvocationTracker;
+import dev.pixelib.meteor.core.transport.packets.InvocationDescriptor;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

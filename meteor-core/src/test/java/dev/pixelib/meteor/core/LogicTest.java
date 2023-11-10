@@ -8,7 +8,7 @@ import dev.pixelib.meteor.core.executor.ImplementationWrapper;
 import dev.pixelib.meteor.core.transport.packets.InvocationDescriptor;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LogicTest {
 
