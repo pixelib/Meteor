@@ -23,10 +23,7 @@ public class ProxyInvocHandler implements InvocationHandler {
             args = new Object[0];
         }
 
-        // build invocation descriptor
-        Class<?>[] argTypes = new Class<?>[args.length];
-        for (int i = 0; i < args.length; i++)
-            argTypes[i] = args[i].getClass();
+        Class<?>[] argTypes = this.buildInvocationDescriptor(args);
 
         InvocationDescriptor invocationDescriptor = new InvocationDescriptor(namespace, method.getDeclaringClass(), method.getName(), args, argTypes, method.getReturnType());
 
@@ -34,4 +31,10 @@ public class ProxyInvocHandler implements InvocationHandler {
         return localInvocationTracker.invokeRemoteMethod(invocationDescriptor);
     }
 
+    private Class<?>[] buildInvocationDescriptor(Object[] args) {
+        Class<?>[] argTypes = new Class<?>[args.length];
+        for (int i = 0; i < args.length; i++)
+            argTypes[i] = args[i].getClass();
+        return argTypes;
+    }
 }

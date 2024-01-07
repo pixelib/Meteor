@@ -38,12 +38,4 @@ public class InvocationTimedOutException extends RuntimeException {
     public String getNamespace() {
         return namespace;
     }
-
-    /**
-     * @return Amount of time in seconds that the invocation was allowed to take.
-     */
-    public int getTimeoutSeconds() {
-        return timeoutSeconds;
-    }
-
 }

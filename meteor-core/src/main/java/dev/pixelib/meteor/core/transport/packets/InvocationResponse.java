@@ -62,11 +62,9 @@ public class InvocationResponse {
             buffer.release();
             return new InvocationResponse(invocationId, null);
         } else {
-            boolean isPrimitive = buffer.readBoolean();
-
             Class<?> resultClass;
             String responseType = buffer.readCharSequence(buffer.readInt(), Charset.defaultCharset()).toString();
-            if (isPrimitive) {
+            if (buffer.readBoolean()) {
                 resultClass = ArgumentMapper.resolvePrimitive(responseType);
             } else {
                 resultClass = Class.forName(responseType);

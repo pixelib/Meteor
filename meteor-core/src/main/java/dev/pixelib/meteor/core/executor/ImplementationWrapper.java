@@ -16,7 +16,7 @@ public class ImplementationWrapper {
         this.namespace = namespace;
     }
 
-    public <R> R invokeOn(InvocationDescriptor invocationDescriptor, Class<R> returnType /* not unused, see comment below */) throws NoSuchMethodException {
+    public <R> R invokeOn(InvocationDescriptor invocationDescriptor) throws NoSuchMethodException {
         // Get the method that should be invoked
         String methodName = invocationDescriptor.getMethodName();
         Class<?>[] argTypes = invocationDescriptor.getArgTypes();
