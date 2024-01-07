@@ -52,17 +52,15 @@ public class PendingInvocation<T> extends TimerTask {
         }
 
         boolean isVoidOrNullable = invocationDescriptor.getReturnType().equals(Void.TYPE) || !invocationDescriptor.getReturnType().isPrimitive();
-
+        boolean isInstance = invocationDescriptor.getReturnType().isInstance(response);
+        boolean isPrimitive = invocationDescriptor.getReturnType().isPrimitive();
+        boolean isBoxed = ArgumentMapper.ensureBoxedClass(invocationDescriptor.getReturnType()).isInstance(response);
         // check instance of response
-        if (!isVoidOrNullable && !invocationDescriptor.getReturnType().isInstance(response)) {
+        if (!isVoidOrNullable && !isInstance && isPrimitive && !isBoxed) {
             // is the normal return type primitive? then check if its still assignable as a boxed
-            if (invocationDescriptor.getReturnType().isPrimitive()) {
-                if (!ArgumentMapper.ensureBoxedClass(invocationDescriptor.getReturnType()).isAssignableFrom(response.getClass())) {
-                    throw new IllegalStateException("Response is not an instance of the expected return type. " +
-                            "Expected: " + invocationDescriptor.getReturnType().getName() + ", " +
-                            "Actual: " + response.getClass().getName());
-                }
-            }
+            throw new IllegalStateException("Response is not an instance of the expected return type. " +
+                    "Expected: " + invocationDescriptor.getReturnType().getName() + ", " +
+                    "Actual: " + response.getClass().getName());
         }
 
         isComplete.set(true);

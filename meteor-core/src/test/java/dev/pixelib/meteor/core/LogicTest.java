@@ -34,7 +34,7 @@ public class LogicTest {
 
         ImplementationWrapper implementationWrapper = new ImplementationWrapper(this, null);
 
-        int result = (int) implementationWrapper.invokeOn(deserializedInvocationDescriptor, deserializedInvocationDescriptor.getReturnType());
+        int result = (int) implementationWrapper.invokeOn(deserializedInvocationDescriptor);
 
         assertEquals(30, result);
     }
@@ -61,7 +61,7 @@ public class LogicTest {
 
         ImplementationWrapper implementationWrapper = new ImplementationWrapper(this, null);
 
-        int result = (int) implementationWrapper.invokeOn(deserializedInvocationDescriptor, deserializedInvocationDescriptor.getReturnType());
+        int result = (int) implementationWrapper.invokeOn(deserializedInvocationDescriptor);
 
         assertEquals(20, result);
     }
@@ -88,7 +88,7 @@ public class LogicTest {
 
         ImplementationWrapper implementationWrapper = new ImplementationWrapper(this, null);
 
-        String result = (String) implementationWrapper.invokeOn(deserializedInvocationDescriptor, deserializedInvocationDescriptor.getReturnType());
+        String result = (String) implementationWrapper.invokeOn(deserializedInvocationDescriptor);
 
         assertEquals("hellonullworld", result);
     }

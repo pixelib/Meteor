@@ -91,7 +91,7 @@ public class TransportHandler implements Closeable {
         this.executorPool.submit(() -> {
             try {
                 // move to separate threading
-                Object response = matchedImplementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
+                Object response = matchedImplementation.invokeOn(invocationDescriptor);
                 InvocationResponse invocationResponse = new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), response);
                 transport.send(Direction.METHOD_PROXY, invocationResponse.toBytes(serializer));
             } catch (Throwable e) {

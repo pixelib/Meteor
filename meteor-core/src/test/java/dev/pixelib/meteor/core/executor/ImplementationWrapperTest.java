@@ -16,7 +16,7 @@ class ImplementationWrapperTest {
         Class<?>[] argTypes = new Class<?>[] { int.class, int.class };
 
         InvocationDescriptor descriptor = new InvocationDescriptor("math", MathFunctionImplementation.class, "add", new Object[]{1, 2},argTypes, int.class);
-        assertEquals(3, wrapper.invokeOn(descriptor, int.class));
+        assertEquals(3, (Integer) wrapper.invokeOn(descriptor));
     }
 
     @Test
@@ -25,7 +25,7 @@ class ImplementationWrapperTest {
         Class<?>[] argTypes = new Class<?>[] { Integer.class, Integer.class };
 
         InvocationDescriptor descriptor = new InvocationDescriptor("math", MathFunctionImplementation.class, "add", new Object[]{1, 2},argTypes, int.class);
-        assertEquals(3, wrapper.invokeOn(descriptor, int.class));
+        assertEquals(3, (Integer) wrapper.invokeOn(descriptor));
     }
 
     @Test
@@ -35,7 +35,7 @@ class ImplementationWrapperTest {
 
         InvocationDescriptor descriptor = new InvocationDescriptor("math", MathFunctionImplementation.class, "unknown", new Object[]{1, 2},argTypes, int.class);
         NoSuchMethodException noSuchMethodException = assertThrowsExactly(NoSuchMethodException.class, () -> {
-            wrapper.invokeOn(descriptor, int.class);
+            wrapper.invokeOn(descriptor);
         });
 
         assertEquals("No method found with name unknown and compatible arguments (on " + MathFunctionImplementation.class.getName() + ").", noSuchMethodException.getMessage());
