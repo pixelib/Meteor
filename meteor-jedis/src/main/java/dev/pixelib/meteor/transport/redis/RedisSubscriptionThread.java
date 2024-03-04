@@ -9,12 +9,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RedisSubscriptionThread {
 
-    private final SubscriptionHandler messageBroker;
+    private final StringMessageBroker messageBroker;
     private final Logger logger;
     private final String defaultChannel;
     private final JedisPool jedisPool;
@@ -28,7 +29,7 @@ public class RedisSubscriptionThread {
         return thread;
     });
 
-    public RedisSubscriptionThread(SubscriptionHandler messageBroker, Logger logger, String channel, JedisPool jedisPool) {
+    public RedisSubscriptionThread(StringMessageBroker messageBroker, Logger logger, String channel, JedisPool jedisPool) {
         this.messageBroker = messageBroker;
         this.logger = logger;
         this.defaultChannel = channel;
@@ -69,16 +70,16 @@ public class RedisSubscriptionThread {
 
     }
 
-    public void subscribe(String channel, SubscriptionHandler onReceive) {
-        jedisPacketListener.subscribe(channel, onReceive);
-
-    }
-
     public void stop() {
         if (isStopping) return;
         isStopping = true;
         jedisPacketListener.stop();
         listenerThread.shutdownNow();
+    }
+
+    public void subscribe(String channel, StringMessageBroker onReceive) {
+        jedisPacketListener.subscribe(channel, onReceive);
+
     }
 
     private CompletableFuture<Boolean> isSubscribed() {
