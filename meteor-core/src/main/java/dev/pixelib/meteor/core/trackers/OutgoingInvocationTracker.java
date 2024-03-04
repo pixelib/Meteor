@@ -54,7 +54,8 @@ public class OutgoingInvocationTracker {
         // do we have a pending invocation for this invocation id?
         PendingInvocation<?> pendingInvocation = pendingInvocations.get(invocationResponse.getInvocationId());
         if (pendingInvocation == null) {
-            throw new IllegalStateException("No pending invocation found for invocation id " + invocationResponse.getInvocationId());
+            throw new IllegalStateException("No pending invocation found for invocation id " + invocationResponse.getInvocationId() + ". Data: " + invocationResponse.getResult());
+            //return;
         }
 
         pendingInvocation.complete(invocationResponse.getResult());

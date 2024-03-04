@@ -21,20 +21,19 @@ import static org.mockito.Mockito.*;
 class RedisPacketListenerTest {
 
     @Mock
-    SubscriptionHandler subscriptionHandler;
+    StringMessageBroker subscriptionHandler;
 
     @Test
     void onMessage_withValidChannel() throws Exception {
         String topic = "test";
-        String message = "message";
-        byte[] expected = Base64.getDecoder().decode(message);
+        String expected = "message";
 
         RedisPacketListener redisPacketListener = new RedisPacketListener(subscriptionHandler, topic, Logger.getAnonymousLogger());
 
-        redisPacketListener.onMessage(topic, message);
-        verify(subscriptionHandler, times(1)).onPacket(expected);
-        verify(subscriptionHandler).onPacket(argThat(argument -> {
-            assertArrayEquals(expected,argument);
+        redisPacketListener.onMessage(topic, expected);
+        verify(subscriptionHandler, times(1)).onRedisMessage(expected);
+        verify(subscriptionHandler).onRedisMessage(argThat(argument -> {
+            assertEquals(expected,argument);
             return true;
         }));
     }
@@ -42,24 +41,22 @@ class RedisPacketListenerTest {
     @Test
     void onMessage_throwException() throws Exception {
         String topic = "test";
-        String message = "message";
-        byte[] expected = Base64.getDecoder().decode(message);
+        String expected = "message";
 
-
-        SubscriptionHandler handler = new SubscriptionHandler() {
+        StringMessageBroker handler = new StringMessageBroker() {
             @Override
-            public boolean onPacket(byte[] packet) throws Exception {
+            public boolean onRedisMessage(String message) throws Exception {
                 throw new NullPointerException();
             }
         };
 
-        SubscriptionHandler handlerSub = spy(handler);
+        StringMessageBroker handlerSub = spy(handler);
         RedisPacketListener redisPacketListener = new RedisPacketListener(handlerSub, topic, Logger.getAnonymousLogger());
 
-        redisPacketListener.onMessage(topic, message);
-        verify(handlerSub, times(1)).onPacket(expected);
-        verify(handlerSub).onPacket(argThat(argument -> {
-            assertArrayEquals(expected,argument);
+        redisPacketListener.onMessage(topic, expected);
+        verify(handlerSub, times(1)).onRedisMessage(expected);
+        verify(handlerSub).onRedisMessage(argThat(argument -> {
+            assertEquals(expected,argument);
             return true;
         }));
     }

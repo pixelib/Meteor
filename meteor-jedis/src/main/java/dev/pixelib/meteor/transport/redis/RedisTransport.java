@@ -9,6 +9,8 @@ import redis.clients.jedis.JedisPool;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Locale;
+import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class RedisTransport implements RpcTransport {
@@ -18,6 +20,8 @@ public class RedisTransport implements RpcTransport {
     private final JedisPool jedisPool;
     private final String topic;
     private RedisSubscriptionThread redisSubscriptionThread;
+    private final UUID transportId = UUID.randomUUID();
+    private boolean ignoreSelf = true;
 
     public RedisTransport(JedisPool jedisPool, String topic) {
         this.jedisPool = jedisPool;
@@ -34,6 +38,11 @@ public class RedisTransport implements RpcTransport {
         this.topic = topic;
     }
 
+    public RedisTransport withIgnoreSelf(boolean ignoreSelf) {
+        this.ignoreSelf = ignoreSelf;
+        return this;
+    }
+
     @Override
     public void send(Direction direction, byte[] bytes) {
         if (jedisPool.isClosed()) {
@@ -41,7 +50,10 @@ public class RedisTransport implements RpcTransport {
         }
 
         try (Jedis connection = jedisPool.getResource()) {
-            connection.publish(getTopicName(direction), Base64.getEncoder().encodeToString(bytes));
+            connection.publish(
+                    getTopicName(direction),
+                    transportId + Base64.getEncoder().encodeToString(bytes)
+            );
         }
     }
 
@@ -51,11 +63,31 @@ public class RedisTransport implements RpcTransport {
             throw new IllegalStateException("Jedis pool is closed");
         }
 
+        StringMessageBroker wrappedHandler = (message) -> {
+            byte[] bytes = message.getBytes();
+            // only split after UUID, which always has a length of 36
+            byte[] uuid = new byte[36];
+            System.arraycopy(bytes, 0, uuid, 0, 36);
+
+            if (ignoreSelf && transportId.toString().equals(new String(uuid))) {
+                return false;
+            }
+
+            byte[] data = new byte[bytes.length - 36];
+            System.arraycopy(bytes, 36, data, 0, data.length);
+
+            try {
+                return onReceive.onPacket(Base64.getDecoder().decode(data));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+
         if (redisSubscriptionThread == null) {
-            redisSubscriptionThread = new RedisSubscriptionThread(onReceive, logger, getTopicName(direction), jedisPool);
+            redisSubscriptionThread = new RedisSubscriptionThread(wrappedHandler, logger, getTopicName(direction), jedisPool);
             redisSubscriptionThread.start().join();
         } else {
-            redisSubscriptionThread.subscribe(getTopicName(direction), onReceive);
+            redisSubscriptionThread.subscribe(getTopicName(direction), wrappedHandler);
         }
     }
 
