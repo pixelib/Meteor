@@ -86,6 +86,7 @@ public class PendingInvocation<T> extends TimerTask {
         }
 
         isTimedOut.set(true);
+
         this.completable.completeExceptionally(
                 new InvocationTimedOutException(invocationDescriptor.getMethodName(), invocationDescriptor.getNamespace(), timeoutSeconds)
         );
