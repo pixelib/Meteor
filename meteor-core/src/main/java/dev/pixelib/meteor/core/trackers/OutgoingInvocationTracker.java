@@ -50,18 +50,21 @@ public class OutgoingInvocationTracker {
         }
     }
 
-    public void completeInvocation(InvocationResponse invocationResponse) {
+    public boolean completeInvocation(InvocationResponse invocationResponse) {
         // do we have a pending invocation for this invocation id?
         PendingInvocation<?> pendingInvocation = pendingInvocations.get(invocationResponse.getInvocationId());
         if (pendingInvocation == null) {
-            throw new IllegalStateException("No pending invocation found for invocation id " + invocationResponse.getInvocationId() + ". Data: " + invocationResponse.getResult());
-            //return;
+            // we cannot handle this invocation, so it must be handled in another listener
+            return false;
         }
 
         pendingInvocation.complete(invocationResponse.getResult());
 
         // remove the pending invocation from the map
         pendingInvocations.remove(invocationResponse.getInvocationId());
+
+        // invocation was successfully completed
+        return true;
     }
 
 }
