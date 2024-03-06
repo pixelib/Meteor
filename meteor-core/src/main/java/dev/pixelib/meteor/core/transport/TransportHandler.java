@@ -49,8 +49,7 @@ public class TransportHandler implements Closeable {
 
     private boolean handleInvocationResponse(byte[] bytes) throws ClassNotFoundException {
         InvocationResponse invocationResponse = InvocationResponse.fromBytes(serializer, bytes);
-        outgoingInvocationTracker.completeInvocation(invocationResponse);
-        return true;
+        return outgoingInvocationTracker.completeInvocation(invocationResponse);
     }
 
     private boolean handleInvocationRequest(byte[] bytes) throws ClassNotFoundException {
