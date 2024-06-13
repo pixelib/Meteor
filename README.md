@@ -21,7 +21,7 @@ Meteor is available on Maven Central, and can be installed by adding the followi
 <dependency>
   <groupId>dev.pixelib.meteor</groupId>
   <artifactId>meteor-core</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.4</version>
 </dependency>
 ```
 
@@ -32,7 +32,7 @@ You can install the Redis transport by adding the following dependency to your `
 <dependency>
   <groupId>dev.pixelib.meteor.transport</groupId>
   <artifactId>meteor-jedis</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.4</version>
 </dependency>
 ```
 
