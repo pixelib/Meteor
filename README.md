@@ -1,5 +1,5 @@
 <p align="center">
-<img height="150" src="https://github.com/pixelib/Meteor/assets/10709682/d2a36e0a-38d5-43b7-a33b-600834559e46" />
+<img height="150" src="https://github.com/user-attachments/assets/c11ec2bb-366c-4578-9b2e-9aea1361f730" />
 </p>
 
 # Meteor ![Maven Central](https://img.shields.io/maven-central/v/dev.pixelib.meteor/meteor-parent) ![branches](.github/badges/branches.svg) ![jacoco coverage](.github/badges/jacoco.svg)
