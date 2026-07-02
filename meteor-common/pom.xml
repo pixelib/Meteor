@@ -11,6 +11,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <name>Meteor Common</name>
+
     <artifactId>meteor-common</artifactId>
 
     <dependencies>

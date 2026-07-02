@@ -10,6 +10,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <name>Meteor Jedis</name>
+
     <artifactId>meteor-jedis</artifactId>
 
     <dependencies>

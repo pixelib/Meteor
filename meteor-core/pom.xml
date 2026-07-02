@@ -11,6 +11,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <name>Meteor Core</name>
+
     <artifactId>meteor-core</artifactId>
 
     <dependencies>
