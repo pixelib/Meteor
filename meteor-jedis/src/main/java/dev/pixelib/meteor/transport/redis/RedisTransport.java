@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class RedisTransport implements RpcTransport {

@@ -1,7 +1,6 @@
 package dev.pixelib.meteor.transport.redis;
 
 import com.github.fppt.jedismock.RedisServer;
-import dev.pixelib.meteor.base.interfaces.SubscriptionHandler;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -10,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import redis.clients.jedis.JedisPool;
 
-import java.util.Base64;
 import java.util.Collection;
 import java.util.logging.Logger;
 
