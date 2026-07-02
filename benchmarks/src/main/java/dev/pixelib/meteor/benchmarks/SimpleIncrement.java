@@ -21,7 +21,6 @@ public class SimpleIncrement {
 
     @Setup
     public void setup() {
-        System.out.println("workerThreads: " + workerThreads);
         RpcOptions rpcOptions = new RpcOptions();
         rpcOptions.setExecutorThreads(workerThreads);
         meteor = new Meteor(new LoopbackTransport(), rpcOptions);

@@ -3,10 +3,12 @@ package dev.pixelib.meteor.transport.redis;
 import com.github.fppt.jedismock.RedisServer;
 import com.github.fppt.jedismock.operations.server.MockExecutor;
 import com.github.fppt.jedismock.server.ServiceOptions;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import redis.clients.jedis.JedisPool;
+import org.junit.jupiter.api.Timeout;
+import redis.clients.jedis.RedisClient;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.CompletionException;
@@ -16,30 +18,40 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RedisSubscriptionThreadTest {
 
-    @Test
-    @Disabled
-    void start_success() throws Exception {
-        RedisServer server = RedisServer.newRedisServer().start();
+    private RedisSubscriptionThread subThread;
+    private RedisServer server;
+    private RedisClient redisClient;
 
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
-        RedisSubscriptionThread subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", jedisPool);
+    @AfterEach
+    void tearDown() throws IOException {
+        if (subThread != null) {
+            subThread.stop();
+        }
+        if (redisClient != null && !redisClient.getPool().isClosed()) {
+            redisClient.close();
+        }
+        if (server != null) {
+            server.stop();
+        }
+    }
+
+    @Test
+    void start_success() throws Exception {
+        server = RedisServer.newRedisServer().start();
+        redisClient = new RedisClient.Builder().hostAndPort(server.getHost(), server.getBindPort()).build();
+        subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", redisClient);
 
         boolean result = subThread.start().join();
 
         assertTrue(result);
-        assertFalse(jedisPool.isClosed());
-
-
-        subThread.stop();
-        jedisPool.close();
-        server.stop();
-        assertTrue(jedisPool.isClosed());
+        assertFalse(redisClient.getPool().isClosed());
     }
 
     @Test
-    void start_NoConnection() throws Exception {
-        JedisPool jedisPool = new JedisPool("127.0.0.5", 2314);
-        RedisSubscriptionThread subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", jedisPool);
+    @Timeout(10)
+    void start_NoConnection() {
+        redisClient = new RedisClient.Builder().hostAndPort("127.0.0.5", 2314).build();
+        subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", redisClient);
 
         CompletionException exception = assertThrowsExactly(CompletionException.class, () -> {
             subThread.start().join();
@@ -50,67 +62,50 @@ class RedisSubscriptionThreadTest {
     }
 
     @Test
-    @Disabled
-    void start_reconnect() throws Exception {
-        RedisServer server = RedisServer.newRedisServer().start();
-
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
-        RedisSubscriptionThread subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", jedisPool);
-
-        boolean result = subThread.start().join();
-
-        assertTrue(result);
-        assertFalse(jedisPool.isClosed());
-
-        server.stop();
-
-        Thread.sleep(100);
-        server.start();
-
-        subThread.stop();
-        jedisPool.close();
-        assertTrue(jedisPool.isClosed());
-    }
-
-    @Test
-    @Disabled
+    @Timeout(10)
     void subscribe_success() throws Exception {
         Collection<String> subscribedChannels = new HashSet<>();
 
-        RedisServer server = RedisServer.newRedisServer()
+        server = RedisServer.newRedisServer()
                 .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
                     if ("subscribe".equals(command)) {
-                        subscribedChannels.add(params.get(0).toString());
+                        subscribedChannels.add(params.getFirst().toString());
                     }
                     return MockExecutor.proceed(state, command, params);
                 }))
                 .start();
 
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
-        RedisSubscriptionThread subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", jedisPool);
+        redisClient = new RedisClient.Builder().hostAndPort(server.getHost(), server.getBindPort()).build();
+        subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", redisClient);
 
         subThread.start().join();
 
-        subThread.stop();
-        jedisPool.close();
-        server.stop();
-        assertTrue(jedisPool.isClosed());
         assertTrue(subscribedChannels.contains("channel"));
     }
 
     @Test
-    @Disabled
-    void stop_success() throws Exception {
-        RedisServer server = RedisServer.newRedisServer().start();
-
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
-        RedisSubscriptionThread subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", jedisPool);
+    @Timeout(10)
+    void stop_idempotent() throws Exception {
+        server = RedisServer.newRedisServer().start();
+        redisClient = new RedisClient.Builder().hostAndPort(server.getHost(), server.getBindPort()).build();
+        subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", redisClient);
 
         subThread.start().join();
-
         subThread.stop();
-        jedisPool.close();
-        server.stop();
-        assertTrue(jedisPool.isClosed());
+        assertDoesNotThrow(() -> subThread.stop());
+    }
+
+    @Test
+    @Timeout(10)
+    void stop_success() throws Exception {
+        server = RedisServer.newRedisServer().start();
+        redisClient = new RedisClient.Builder().hostAndPort(server.getHost(), server.getBindPort()).build();
+        subThread = new RedisSubscriptionThread(packet -> true, Logger.getAnonymousLogger(), "channel", redisClient);
+
+        subThread.start().join();
+        subThread.stop();
+        redisClient.close();
+
+        assertTrue(redisClient.getPool().isClosed());
     }
 }

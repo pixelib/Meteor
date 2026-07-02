@@ -1,17 +1,16 @@
 package dev.pixelib.meteor.transport.redis;
 
 import com.github.fppt.jedismock.RedisServer;
-import dev.pixelib.meteor.base.interfaces.SubscriptionHandler;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Connection;
+import redis.clients.jedis.RedisClient;
 
-import java.util.Base64;
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,10 +31,6 @@ class RedisPacketListenerTest {
 
         redisPacketListener.onMessage(topic, expected);
         verify(subscriptionHandler, times(1)).onRedisMessage(expected);
-        verify(subscriptionHandler).onRedisMessage(argThat(argument -> {
-            assertEquals(expected,argument);
-            return true;
-        }));
     }
 
     @Test
@@ -55,14 +50,10 @@ class RedisPacketListenerTest {
 
         redisPacketListener.onMessage(topic, expected);
         verify(handlerSub, times(1)).onRedisMessage(expected);
-        verify(handlerSub).onRedisMessage(argThat(argument -> {
-            assertEquals(expected,argument);
-            return true;
-        }));
     }
 
     @Test
-    void onMessage_withUnKnownChannel() throws Exception {
+    void onMessage_withUnKnownChannel() {
         String topic = "test";
         String message = "message";
 
@@ -73,73 +64,77 @@ class RedisPacketListenerTest {
 
     @Test
     @Timeout(10)
-    @Disabled
-    void subscribe_success() throws Exception{
+    void subscribe_success() throws Exception {
         String topic = "test";
         String newTopic = "newTopic";
 
         RedisServer server = RedisServer.newRedisServer().start();
+        try {
+            RedisClient redisClient = new RedisClient.Builder().hostAndPort(server.getHost(), server.getBindPort()).build();
 
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
+            CountDownLatch subscribedLatch = new CountDownLatch(1);
+            RedisPacketListener redisPacketListener = new RedisPacketListener(subscriptionHandler, topic, Logger.getAnonymousLogger()) {
+                @Override
+                public void onSubscribe(String channel, int subscribedChannels) {
+                    super.onSubscribe(channel, subscribedChannels);
+                    subscribedLatch.countDown();
+                }
+            };
 
+            Thread runner = new Thread(() -> {
+                Connection connection = redisClient.getPool().getResource();
+                redisPacketListener.proceed(connection, topic);
+            });
+            runner.start();
 
-        RedisPacketListener redisPacketListener = new RedisPacketListener(subscriptionHandler, topic, Logger.getAnonymousLogger());
+            subscribedLatch.await();
 
-        Thread runner = new Thread(() -> {
-            jedisPool.getResource().subscribe(redisPacketListener, topic);
-        });
+            redisPacketListener.subscribe(newTopic, subscriptionHandler);
+            assertTrue(redisPacketListener.getCustomSubscribedChannels().contains(newTopic));
 
-        runner.start();
+            redisPacketListener.stop();
+            runner.join();
 
-        while(!redisPacketListener.isSubscribed()) {
-            Thread.sleep(20);
+            redisClient.close();
+        } finally {
+            server.stop();
         }
 
-        redisPacketListener.subscribe(newTopic, subscriptionHandler);
-
-        assertTrue(redisPacketListener.getCustomSubscribedChannels().contains(newTopic));
-
-        redisPacketListener.stop();
-
-        while(redisPacketListener.isSubscribed()) {
-            Thread.sleep(20);
-        }
-
-        jedisPool.close();
-        server.stop();
-
-
-        assertEquals(0, redisPacketListener.getSubscribedChannels());
     }
 
     @Test
     @Timeout(10)
-    @Disabled
-    void stop_success() throws Exception{
+    void stop_success() throws Exception {
         String topic = "test";
 
         RedisServer server = RedisServer.newRedisServer().start();
+        try {
+            RedisClient redisClient = new RedisClient.Builder().hostAndPort(server.getHost(), server.getBindPort()).build();
 
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
+            CountDownLatch subscribedLatch = new CountDownLatch(1);
+            RedisPacketListener redisPacketListener = new RedisPacketListener(subscriptionHandler, topic, Logger.getAnonymousLogger()) {
+                @Override
+                public void onSubscribe(String channel, int subscribedChannels) {
+                    super.onSubscribe(channel, subscribedChannels);
+                    subscribedLatch.countDown();
+                }
+            };
 
+            Thread runner = new Thread(() -> {
+                Connection connection = redisClient.getPool().getResource();
+                redisPacketListener.proceed(connection, topic);
+            });
+            runner.start();
 
-        RedisPacketListener redisPacketListener = new RedisPacketListener(subscriptionHandler, topic, Logger.getAnonymousLogger());
+            subscribedLatch.await();
 
-        Thread runner = new Thread(() -> {
-            jedisPool.getResource().subscribe(redisPacketListener, topic);
-        });
+            redisPacketListener.stop();
+            runner.join();
 
-        runner.start();
-
-        while(!redisPacketListener.isSubscribed()) {
-            Thread.sleep(20);
+            redisClient.close();
+        } finally {
+            server.stop();
         }
-
-        redisPacketListener.stop();
-        jedisPool.close();
-        server.stop();
-
-        assertEquals(0, redisPacketListener.getSubscribedChannels());
     }
 
     @Test

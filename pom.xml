@@ -13,6 +13,21 @@
     <description>Meteor is a lightweight, fast and easy to use Java RPC library.</description>
     <url>https://github.com/pixelib/Meteor</url>
 
+    <modules>
+        <module>meteor-common</module>
+        <module>meteor-core</module>
+        <module>examples</module>
+        <module>meteor-jedis</module>
+        <module>benchmarks</module>
+    </modules>
+
+    <properties>
+        <revision>0.0.1-localbuild</revision>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <developers>
         <developer>
             <id>duckelekuuk</id>
@@ -25,7 +40,7 @@
             <id>mindgamesnl</id>
             <name>Mats</name>
             <organization>Mindgamesnl</organization>
-            <organizationUrl>https://github.com/Duckelekuuk</organizationUrl>
+            <organizationUrl>https://github.com/Mindgamesnl</organizationUrl>
             <email>mats@toetmats.nl</email>
         </developer>
     </developers>
@@ -35,21 +50,6 @@
         <developerConnection>scm:git:ssh://github.com/pixelib/Meteor.git</developerConnection>
         <url>https://github.com/pixelib/Meteor</url>
     </scm>
-
-    <modules>
-        <module>meteor-common</module>
-        <module>meteor-core</module>
-        <module>examples</module>
-        <module>meteor-jedis</module>
-        <module>benchmarks</module>
-    </modules>
-
-    <properties>
-        <revision>1.0.2-localbuild</revision>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <licenses>
         <license>
@@ -70,101 +70,58 @@
         </repository>
     </distributionManagement>
 
-    
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.14.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>5.10.0</version>
+                <version>6.1.1</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>4.8.1</version>
+                <version>5.23.0</version>
                 <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>redis.clients</groupId>
-                <artifactId>jedis</artifactId>
-                <version>5.0.2</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-buffer</artifactId>
-                <version>4.1.97.Final</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.10.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.46</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.1.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.5.0</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.9</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.5.0</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.3.0</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.1.1</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>flatten-maven-plugin</artifactId>
-                    <version>1.5.0</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.46</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.15</version>
                 <executions>
                     <execution>
                         <goals>
@@ -183,6 +140,7 @@
 
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.12.0</version>
                 <configuration>
                     <doclint>all,-missing</doclint>
                 </configuration>
@@ -198,6 +156,7 @@
 
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.4.0</version>
                 <configuration>
                     <attach>true</attach>
                 </configuration>
@@ -214,6 +173,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.7.3</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
@@ -244,10 +204,22 @@
             <id>release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.11.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                            <waitUntilPublished>true</waitUntilPublished>
+                        </configuration>
+                    </plugin>
                     <!--Sign the components - this is required by maven central for releases -->
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.8</version>
                         <configuration>
                             <gpgArguments>
                                 <arg>--pinentry-mode</arg>

@@ -15,15 +15,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>dev.pixelib.meteor</groupId>
             <artifactId>meteor-common</artifactId>
             <version>${revision}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.2.15.Final</version>
         </dependency>
 
         <dependency>

@@ -15,21 +15,19 @@ class IncomingInvocationTrackerTest {
 
         incomingInvocationTracker.registerImplementation(testMathFunctions, "test");
 
-        assertEquals(incomingInvocationTracker.getImplementations().size(), 1);
-        assertEquals(incomingInvocationTracker.getImplementations().get(MathFunctions.class).size(), 1);
+        assertEquals(1, incomingInvocationTracker.getImplementations().size());
+        assertEquals(1, incomingInvocationTracker.getImplementations().get(MathFunctions.class).size());
 
         boolean matched = false;
         for (ImplementationWrapper implementationWrapper : incomingInvocationTracker.getImplementations().get(MathFunctions.class)) {
-            if (implementationWrapper.getImplementation() == testMathFunctions) {
-                // inverted, because the namespace is nullable
-                if ("test".equals(implementationWrapper.getNamespace())) {
+            if (implementationWrapper.getImplementation() == testMathFunctions && "test".equals(implementationWrapper.getNamespace())) {
                     if (matched) {
                         fail("Implementation registered twice");
                         return;
                     }
                     matched = true;
                 }
-            }
+
         }
 
         assertTrue(matched, "Implementation not registered");

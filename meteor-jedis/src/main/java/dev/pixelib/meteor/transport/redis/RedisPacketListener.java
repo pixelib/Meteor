@@ -1,16 +1,13 @@
 package dev.pixelib.meteor.transport.redis;
 
-import dev.pixelib.meteor.base.interfaces.SubscriptionHandler;
 import redis.clients.jedis.JedisPubSub;
 
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

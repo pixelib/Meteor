@@ -9,7 +9,7 @@ public class GsonSerializer implements RpcSerializer {
      * the Gson instance to use for serialization/deserialization
      * this is a static field so that it is shared between all instances of this class and can be swapped out at runtime
      */
-    public static Gson GSON = new Gson();
+    public static final Gson GSON = new Gson();
 
     /**
      * @param obj the object to serialize

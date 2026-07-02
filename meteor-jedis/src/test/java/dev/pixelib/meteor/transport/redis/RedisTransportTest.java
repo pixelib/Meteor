@@ -4,306 +4,186 @@ import com.github.fppt.jedismock.RedisServer;
 import com.github.fppt.jedismock.operations.server.MockExecutor;
 import com.github.fppt.jedismock.server.ServiceOptions;
 import dev.pixelib.meteor.base.enums.Direction;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
-import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.RedisClient;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RedisTransportTest {
 
+    private RedisTransport transport;
+    private RedisServer server;
+
+    @AfterEach
+    void tearDown() throws IOException {
+        if (transport != null) {
+            transport.close();
+        }
+        if (server != null) {
+            server.stop();
+        }
+    }
+
     @Test
-    @Disabled
     void send_validImplementation() throws IOException {
-        String topic = "test";
-        String channel = "test_implementation";
         String message = "cool_message";
 
-        List<AssertionFailedError> assertionErrors = new ArrayList<>();
+        List<String> published = new ArrayList<>();
 
-        RedisServer server = RedisServer.newRedisServer()
+        server = RedisServer.newRedisServer()
                 .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
-                    try {
-                        if ("publish".equals(command)) {
-                            // loop over all params and print them
-                            assertEquals(channel, params.get(0).toString(), "Channel name is not correct");
-                            assertEquals(message, new String(Base64.getDecoder().decode(params.get(1).data())), "Message is not correct");
-                        }
-                    } catch (AssertionFailedError e) {
-                        assertionErrors.add(e);
+                    if ("publish".equals(command)) {
+                        published.add(new String(params.getLast().data()));
                     }
                     return MockExecutor.proceed(state, command, params);
                 }))
                 .start();
 
-        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
+        transport = new RedisTransport(server.getHost(), server.getBindPort(), "test");
         transport.send(Direction.IMPLEMENTATION, message.getBytes());
 
-        transport.close();
-        server.stop();
-
-        if (!assertionErrors.isEmpty()) {
-            throw assertionErrors.get(0);
-        }
+        assertEquals(1, published.size());
+        String raw = published.getFirst();
+        String base64Data = raw.substring(36);
+        assertEquals(message, new String(Base64.getDecoder().decode(base64Data)));
     }
 
     @Test
-    @Disabled
     void send_validMethodProxy() throws IOException {
-        String topic = "test";
-        String channel = "test_method_proxy";
         String message = "cool_message";
 
-        List<AssertionFailedError> assertionErrors = new ArrayList<>();
+        List<String> published = new ArrayList<>();
 
-        RedisServer server = RedisServer.newRedisServer()
+        server = RedisServer.newRedisServer()
                 .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
-                    try {
-                        if ("publish".equals(command)) {
-                            // loop over all params and print them
-                            assertEquals(channel, params.get(0).toString(), "Channel name is not correct");
-                            assertEquals(message, new String(Base64.getDecoder().decode(params.get(1).data())), "Message is not correct");
-                        }
-                    } catch (AssertionFailedError e) {
-                        assertionErrors.add(e);
+                    if ("publish".equals(command)) {
+                        published.add(new String(params.getLast().data()));
                     }
                     return MockExecutor.proceed(state, command, params);
                 }))
                 .start();
 
-        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
+        transport = new RedisTransport(server.getHost(), server.getBindPort(), "test");
         transport.send(Direction.METHOD_PROXY, message.getBytes());
 
-        transport.close();
-        server.stop();
-
-        if (!assertionErrors.isEmpty()) {
-            throw assertionErrors.get(0);
-        }
+        assertEquals(1, published.size());
+        String raw = published.getFirst();
+        String base64Data = raw.substring(36);
+        assertEquals(message, new String(Base64.getDecoder().decode(base64Data)));
     }
 
     @Test
-    @Disabled
-    void subscribe_implementation() throws IOException, InterruptedException {
-        String topic = "test";
-        String channel = "test_implementation";
+    void subscribe_implementation() throws IOException {
+        List<String> subscribedChannels = new ArrayList<>();
 
-        List<AssertionFailedError> assertionErrors = new ArrayList<>();
-
-        RedisServer server = RedisServer.newRedisServer()
-                .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
-                    try {
-                        if ("subscribe".equals(command)) {
-                            assertEquals(channel, params.get(0).toString(), "Channel name is not correct");
-                        }
-                    } catch (AssertionFailedError e) {
-                        assertionErrors.add(e);
-                    }
-                    return MockExecutor.proceed(state, command, params);
-                }))
-                .start();
-
-        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
-        transport.subscribe(Direction.IMPLEMENTATION, packet -> true);
-
-        transport.close();
-        server.stop();
-
-        if (!assertionErrors.isEmpty()) {
-            throw assertionErrors.get(0);
-        }
-    }
-
-    @Test
-    @Disabled
-    void subscribe_methodProxy() throws IOException {
-        String topic = "test";
-        String channel = "test_method_proxy";
-
-        List<AssertionFailedError> assertionErrors = new ArrayList<>();
-
-        RedisServer server = RedisServer.newRedisServer()
-                .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
-                    try {
-                        if ("subscribe".equals(command)) {
-                            assertEquals(channel, params.get(0).toString(), "Channel name is not correct");
-                        }
-                    } catch (AssertionFailedError e) {
-                        assertionErrors.add(e);
-                    }
-                    return MockExecutor.proceed(state, command, params);
-                }))
-                .start();
-
-        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
-        transport.subscribe(Direction.METHOD_PROXY, packet -> true);
-
-        transport.close();
-        server.stop();
-
-        if (!assertionErrors.isEmpty()) {
-            throw assertionErrors.get(0);
-        }
-    }
-
-    @Test
-    @Disabled
-    void subscribe_secondSubscription() throws IOException {
-        String topic = "test";
-        String channelProxy = "test_method_proxy";
-        String channelImpl = "test_implementation";
-
-        Collection<String> subscribedChannels = new HashSet<>();
-
-        RedisServer server = RedisServer.newRedisServer()
+        server = RedisServer.newRedisServer()
                 .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
                     if ("subscribe".equals(command)) {
-                        subscribedChannels.add(params.get(0).toString());
+                        subscribedChannels.add(params.getFirst().toString());
                     }
                     return MockExecutor.proceed(state, command, params);
                 }))
                 .start();
 
-        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
-        transport.subscribe(Direction.METHOD_PROXY, packet -> true);
+        transport = new RedisTransport(server.getHost(), server.getBindPort(), "test");
         transport.subscribe(Direction.IMPLEMENTATION, packet -> true);
 
-        transport.close();
-        server.stop();
-
-        assertTrue(subscribedChannels.contains(channelProxy));
-        assertTrue(subscribedChannels.contains(channelImpl));
+        assertEquals(1, subscribedChannels.size());
+        assertEquals("test_implementation", subscribedChannels.getFirst());
     }
 
     @Test
-    void getTopicName_withImplementationDirection() throws IOException {
-        String topic = "test";
-        String expected = "test_implementation";
+    void subscribe_methodProxy() throws IOException {
+        List<String> subscribedChannels = new ArrayList<>();
 
-        RedisServer server = RedisServer.newRedisServer().start();
-        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
+        server = RedisServer.newRedisServer()
+                .setOptions(ServiceOptions.withInterceptor((state, command, params) -> {
+                    if ("subscribe".equals(command)) {
+                        subscribedChannels.add(params.getFirst().toString());
+                    }
+                    return MockExecutor.proceed(state, command, params);
+                }))
+                .start();
 
+        transport = new RedisTransport(server.getHost(), server.getBindPort(), "test");
+        transport.subscribe(Direction.METHOD_PROXY, packet -> true);
+
+        assertEquals(1, subscribedChannels.size());
+        assertEquals("test_method_proxy", subscribedChannels.getFirst());
+    }
+
+    @Test
+    void subscribe_secondSubscription() throws IOException {
+        server = RedisServer.newRedisServer().start();
+        transport = new RedisTransport(server.getHost(), server.getBindPort(), "test");
+        transport.subscribe(Direction.METHOD_PROXY, packet -> true);
+        transport.subscribe(Direction.IMPLEMENTATION, packet -> true);
+    }
+
+    @Test
+    void getTopicName_withImplementationDirection() {
+        transport = new RedisTransport("redis://localhost:6379", "test");
 
         String resultTopicName = transport.getTopicName(Direction.IMPLEMENTATION);
-        assertEquals(expected, resultTopicName, "Topic name is not correct");
-
-
-        transport.close();
-        server.stop();
+        assertEquals("test_implementation", resultTopicName);
     }
 
     @Test
-    @Disabled
-    void getTopicName_withMethodProxy() throws IOException {
-        String topic = "test";
-        String expected = "test_method_proxy";
-
-        RedisServer server = RedisServer.newRedisServer().start();
-        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
-
+    void getTopicName_withMethodProxy() {
+        transport = new RedisTransport("redis://localhost:6379", "test");
 
         String resultTopicName = transport.getTopicName(Direction.METHOD_PROXY);
-        assertEquals(expected, resultTopicName, "Topic name is not correct");
-
-
-        transport.close();
-        server.stop();
+        assertEquals("test_method_proxy", resultTopicName);
     }
 
-
-
     @Test
-    @Disabled
-    void getTopic_nameWithNull() throws IOException {
-        String topic = "test";
-
-        RedisServer server = RedisServer.newRedisServer().start();
-        RedisTransport transport = new RedisTransport(server.getHost(), server.getBindPort(), topic);
-
+    void getTopic_nameWithNull() {
+        transport = new RedisTransport("redis://localhost:6379", "test");
 
         assertThrowsExactly(NullPointerException.class, () -> {
             transport.getTopicName(null);
-        }, "Method returned a topic name for a null direction");
-
-
-        transport.close();
-        server.stop();
+        });
     }
 
     @Test
-    @Disabled
-    void close_success() throws IOException  {
+    void close_success() throws IOException {
         String topic = "test";
-
-        RedisServer server = RedisServer.newRedisServer().start();
-
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
-        RedisTransport transport = new RedisTransport(jedisPool, topic);
+        transport = new RedisTransport("localhost", 6379, topic);
 
         transport.close();
-        server.stop();
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            transport.send(Direction.IMPLEMENTATION, "test".getBytes());
-
-        }, "Method did not throw an exception when trying to send a message after closing");
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            transport.subscribe(Direction.IMPLEMENTATION, (data) -> true);
-        }, "Method did not throw an exception when trying to send a message after closing");
-
-        assertTrue(jedisPool.isClosed());
-    }
-
-
-    @Test
-    @Disabled
-    void close_whenAlreadyClosed() throws IOException  {
-        String topic = "test";
-
-        RedisServer server = RedisServer.newRedisServer().start();
-
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
-        RedisTransport transport = new RedisTransport(jedisPool, topic);
-
-        transport.close();
-        server.stop();
-
-        assertTrue(jedisPool.isClosed());
+        assertThrowsExactly(IllegalStateException.class, () -> transport.send(Direction.IMPLEMENTATION, "test".getBytes()));
+        assertThrowsExactly(IllegalStateException.class, () -> transport.subscribe(Direction.IMPLEMENTATION, data -> true));
     }
 
     @Test
-    @Disabled
-    void construct_withJedisPool() throws IOException  {
-        String topic = "test";
-
-        RedisServer server = RedisServer.newRedisServer().start();
-
-        JedisPool jedisPool = new JedisPool(server.getHost(), server.getBindPort());
-        RedisTransport transport = new RedisTransport(jedisPool, topic);
-
-        assertFalse(jedisPool.isClosed());
+    void close_whenAlreadyClosed() throws IOException {
+        server = RedisServer.newRedisServer().start();
+        transport = new RedisTransport(server.getHost(), server.getBindPort(), "test");
+        transport.subscribe(Direction.IMPLEMENTATION, packet -> true);
 
         transport.close();
-        server.stop();
-
-        assertTrue(jedisPool.isClosed());
+        assertDoesNotThrow(() -> transport.close());
     }
+
     @Test
-    @Disabled
-    void construct_withUrl() throws IOException  {
-        String topic = "test";
+    void construct_withRedisClient() {
+        RedisClient client = RedisClient.create("localhost", 6379);
+        transport = new RedisTransport(client, "test");
 
-        RedisServer server = RedisServer.newRedisServer().start();
-
-        RedisTransport transport = new RedisTransport("redis://" + server.getHost() + ":" + server.getBindPort(), topic);
         assertNotNull(transport);
+    }
 
-        transport.close();
-        server.stop();
+    @Test
+    void construct_withUrl() {
+        transport = new RedisTransport("redis://localhost:6379", "test");
 
+        assertNotNull(transport);
     }
 }

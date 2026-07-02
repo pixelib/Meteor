@@ -1,10 +1,13 @@
 package dev.pixelib.meteor.core.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
+@UtilityClass
 public class ArgumentMapper {
 
     /**
@@ -74,9 +77,8 @@ public class ArgumentMapper {
             return output;
         }
 
-        for (int i = 0; i < method.getParameterCount() - 1; i++) {
-            output[i] = allArguments[i];
-        }
+        int fixedParamCount = Math.max(0, method.getParameterCount() - 1);
+        System.arraycopy(allArguments, 0, output, 0, fixedParamCount);
 
         Class<?> lastParameterType = method.getParameterTypes()[method.getParameterCount() - 1];
         if (lastParameterType.isArray()) {
