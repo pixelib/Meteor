@@ -87,7 +87,6 @@ class ArgumentMapperTest {
         assertEquals("className cannot be null", exception.getMessage());
     }
 
-
     static class Example {
         private void singleParamMethod(Integer integer) { }
         private void multipleParamsMethod(Integer integer, String str, Double dd) { }

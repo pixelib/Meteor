@@ -25,7 +25,7 @@ class InvocationDescriptorTest {
     }
 
     @Test
-    public void testSerializationWithNamespace() throws ClassNotFoundException {
+    void testSerializationWithNamespace() throws ClassNotFoundException {
         RpcSerializer defaultSerializer = new GsonSerializer();
 
         InvocationDescriptor original = new InvocationDescriptor(
@@ -44,7 +44,7 @@ class InvocationDescriptorTest {
     }
 
     @Test
-    public void testSerializationWithoutNamespace() throws ClassNotFoundException {
+    void testSerializationWithoutNamespace() throws ClassNotFoundException {
         RpcSerializer defaultSerializer = new GsonSerializer();
 
         InvocationDescriptor original = new InvocationDescriptor(

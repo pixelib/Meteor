@@ -1,21 +1,18 @@
 package dev.pixelib.meteor.core;
 
 import dev.pixelib.meteor.base.RpcSerializer;
-import dev.pixelib.meteor.base.RpcTransport;
 import dev.pixelib.meteor.base.defaults.GsonSerializer;
-import dev.pixelib.meteor.base.defaults.LoopbackTransport;
 import dev.pixelib.meteor.core.executor.ImplementationWrapper;
 import dev.pixelib.meteor.core.transport.packets.InvocationDescriptor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LogicTest {
+class LogicTest {
 
     @Test
-    public void testSerializedReflectionWithPrimitiveArray() throws ClassNotFoundException, NoSuchMethodException {
+    void testSerializedReflectionWithPrimitiveArray() throws ClassNotFoundException, NoSuchMethodException {
         // Confirmation that core logic of barebones reflection invocations over a serialized array still works
-        RpcTransport transport = new LoopbackTransport();
         RpcSerializer serializer = new GsonSerializer();
 
         // this should return 30
@@ -40,9 +37,8 @@ public class LogicTest {
     }
 
     @Test
-    public void testSerializedReflectionWithPrimitiveArrayAndNull() throws ClassNotFoundException, NoSuchMethodException {
+    void testSerializedReflectionWithPrimitiveArrayAndNull() throws ClassNotFoundException, NoSuchMethodException {
         // Confirmation that core logic of barebones reflection invocations over a serialized array still works
-        RpcTransport transport = new LoopbackTransport();
         RpcSerializer serializer = new GsonSerializer();
 
         // this should return 30
@@ -67,9 +63,8 @@ public class LogicTest {
     }
 
     @Test
-    public void testSerializedReflectionWithPrimitiveArrayAndNullAndNull() throws ClassNotFoundException, NoSuchMethodException {
+    void testSerializedReflectionWithPrimitiveArrayAndNullAndNull() throws ClassNotFoundException, NoSuchMethodException {
         // Confirmation that core logic of barebones reflection invocations over a serialized array still works
-        RpcTransport transport = new LoopbackTransport();
         RpcSerializer serializer = new GsonSerializer();
 
         // this should return 30
@@ -93,7 +88,6 @@ public class LogicTest {
         assertEquals("hellonullworld", result);
     }
 
-
     public String concatStrings(String[] strings) {
         StringBuilder sb = new StringBuilder();
         for (String s : strings) {
@@ -101,6 +95,7 @@ public class LogicTest {
         }
         return sb.toString();
     }
+
 
     public int worstCaseScenarioTest(int a, int... addBeforeMultiplying) {
         int result = 0;

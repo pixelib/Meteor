@@ -2,11 +2,15 @@ package dev.pixelib.meteor.sender;
 
 import dev.pixelib.meteor.core.Meteor;
 import dev.pixelib.meteor.transport.redis.RedisTransport;
+import lombok.extern.java.Log;
 
+import java.util.logging.Level;
+
+@Log
 public class SendingUpdateMethodRedis {
 
     public static void main(String[] args) throws Exception{
-        Meteor meteor = new Meteor(new RedisTransport("192.168.178.46", 6379, "test"));
+        Meteor meteor = new Meteor(new RedisTransport("localhost", 6379, "test"));
 
         MathAdd mathAdd = meteor.registerProcedure(MathAdd.class);
         MathSubstract mathSubstract = meteor.registerProcedure(MathSubstract.class);
@@ -18,13 +22,13 @@ public class SendingUpdateMethodRedis {
 
 
         int subResult = mathSubstract.substract(10, 1, 2, 3, 4, 5);
-        System.out.println("10 - 1 - 2 - 3 - 4 - 5 = " + subResult);
+        log.log(Level.INFO, "10 - 1 - 2 - 3 - 4 - 5 = {0}", subResult);
 
         int addResult = mathAdd.add(1, 2, 3, 4, 5);
-        System.out.println("1 + 2 + 3 + 4 + 5 = " + addResult);
+        log.log(Level.INFO, "1 + 2 + 3 + 4 + 5 = {0}", addResult);
 
         int multiResult = mathMultiply.multiply(5, 5);
-        System.out.println("5 * 5 = " + multiResult);
+        log.log(Level.INFO, "5 * 5 = {0}", multiResult);
 
         meteor.stop();
     }

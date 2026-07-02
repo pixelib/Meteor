@@ -93,7 +93,7 @@ public class TransportHandler implements Closeable {
                 Object response = matchedImplementation.invokeOn(invocationDescriptor, invocationDescriptor.getReturnType());
                 InvocationResponse invocationResponse = new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), response);
                 transport.send(Direction.METHOD_PROXY, invocationResponse.toBytes(serializer));
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.log(Level.SEVERE, "An error occurred while invoking a method", e);
             }
         });

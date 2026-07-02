@@ -9,8 +9,12 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LoopbackTransport implements RpcTransport {
+
+    private final Logger logger = Logger.getLogger(LoopbackTransport.class.getSimpleName());
 
     private final Map<Direction, List<SubscriptionHandler>> onReceiveFunctions = new EnumMap<>(Direction.class);
 
@@ -27,8 +31,7 @@ public class LoopbackTransport implements RpcTransport {
                 boolean matched = onReceiveFunction.onPacket(bytes);
                 if (matched) break;
             } catch (Exception e) {
-                // TODO: Add Logger
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Error occurred while processing packet", e);
             }
         }
     }

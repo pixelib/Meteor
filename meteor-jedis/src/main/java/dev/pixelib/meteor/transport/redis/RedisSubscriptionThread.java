@@ -1,7 +1,7 @@
 package dev.pixelib.meteor.transport.redis;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Connection;
+import redis.clients.jedis.RedisClient;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,7 +16,7 @@ public class RedisSubscriptionThread {
     private final StringMessageBroker messageBroker;
     private final Logger logger;
     private final String defaultChannel;
-    private final JedisPool jedisPool;
+    private final RedisClient redisClient;
     private boolean isStopping = false;
 
     private RedisPacketListener jedisPacketListener;
@@ -27,11 +27,11 @@ public class RedisSubscriptionThread {
         return thread;
     });
 
-    public RedisSubscriptionThread(StringMessageBroker messageBroker, Logger logger, String channel, JedisPool jedisPool) {
+    public RedisSubscriptionThread(StringMessageBroker messageBroker, Logger logger, String channel, RedisClient redisClient) {
         this.messageBroker = messageBroker;
         this.logger = logger;
         this.defaultChannel = channel;
-        this.jedisPool = jedisPool;
+        this.redisClient = redisClient;
     }
 
     public CompletableFuture<Boolean> start() {
@@ -39,12 +39,11 @@ public class RedisSubscriptionThread {
 
         Runnable runnable = () -> {
             while (!Thread.currentThread().isInterrupted()) {
-                try (Jedis connection = jedisPool.getResource()) {
+                try (Connection connection = redisClient.getPool().getResource()) {
                     connection.ping();
                     logger.log(Level.FINE, "Redis connected!");
 
-                    //Start blocking
-                    connection.subscribe(jedisPacketListener, jedisPacketListener.getCustomSubscribedChannels().toArray(new String[]{}));
+                    jedisPacketListener.proceed(connection, jedisPacketListener.getCustomSubscribedChannels().toArray(new String[]{}));
                     break;
                 } catch (JedisConnectionException e) {
                     if (isStopping) {
@@ -63,21 +62,20 @@ public class RedisSubscriptionThread {
         };
 
         listenerThread.execute(runnable);
-
         return isSubscribed();
-
     }
 
     public void stop() {
         if (isStopping) return;
         isStopping = true;
-        jedisPacketListener.stop();
+        if (jedisPacketListener != null && jedisPacketListener.isSubscribed()) {
+            jedisPacketListener.stop();
+        }
         listenerThread.shutdownNow();
     }
 
     public void subscribe(String channel, StringMessageBroker onReceive) {
         jedisPacketListener.subscribe(channel, onReceive);
-
     }
 
     private CompletableFuture<Boolean> isSubscribed() {
@@ -96,7 +94,6 @@ public class RedisSubscriptionThread {
                 }
             }
 
-            // If it fails to subscribe within 5 attempts (5 seconds), throw an exception
             throw new IllegalStateException("Failed to subscribe within the given timeframe");
         });
     }

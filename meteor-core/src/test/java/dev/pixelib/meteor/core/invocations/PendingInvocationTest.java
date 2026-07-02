@@ -13,32 +13,32 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import java.util.Timer;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class PendingInvocationTest {
+class PendingInvocationTest {
 
     // test thread pool
     private static ThreadPoolExecutor threadPoolExecutor;
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         // create thread pool
         threadPoolExecutor = new ThreadPoolExecutor(5, 5, 5, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     }
 
     @AfterAll
-    public static void tearDown() {
+    static void tearDown() {
         // shutdown thread pool
         threadPoolExecutor.shutdown();
     }
 
     @Test
-    public void testPendingInvocation() throws Throwable {
+    void testPendingInvocation() throws Throwable {
         // base instance
         OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(new LoopbackTransport(), new GsonSerializer(), new RpcOptions(), new Timer());
 
@@ -48,13 +48,10 @@ public class PendingInvocationTest {
 
         // complete invocation
         threadPoolExecutor.execute(() -> {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            outgoingInvocationTracker.completeInvocation(
-                    new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), testString)
+            assertDoesNotThrow(() -> {
+                new CountDownLatch(1).await(1, TimeUnit.SECONDS);
+            }, "Thread interrupted");
+            outgoingInvocationTracker.completeInvocation(new InvocationResponse(invocationDescriptor.getUniqueInvocationId(), testString)
             );
         });
 
@@ -64,7 +61,7 @@ public class PendingInvocationTest {
 
     @Test
     @Timeout(2) // seconds
-    public void testTimeout() {
+    void testTimeout() {
         RpcOptions options = new RpcOptions();
         options.setTimeoutSeconds(1);
         OutgoingInvocationTracker outgoingInvocationTracker = new OutgoingInvocationTracker(new LoopbackTransport(), new GsonSerializer(), options, new Timer());

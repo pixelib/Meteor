@@ -3,6 +3,7 @@ package dev.pixelib.meteor.core.trackers;
 import dev.pixelib.meteor.core.executor.ImplementationWrapper;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class IncomingInvocationTracker {
@@ -28,7 +29,7 @@ public class IncomingInvocationTracker {
         }
     }
 
-    public ConcurrentHashMap<Class<?>, Collection<ImplementationWrapper>> getImplementations() {
+    public Map<Class<?>, Collection<ImplementationWrapper>> getImplementations() {
         return implementations;
     }
 }

@@ -2,7 +2,11 @@ package dev.pixelib.meteor.sender;
 
 import dev.pixelib.meteor.base.defaults.LoopbackTransport;
 import dev.pixelib.meteor.core.Meteor;
+import lombok.extern.java.Log;
 
+import java.util.logging.Level;
+
+@Log
 public class SendingUpdateMethod {
 
     public static void main(String[] args) throws Exception{
@@ -17,13 +21,13 @@ public class SendingUpdateMethod {
         meteor.registerImplementation(new MathFunctionsImpl());
 
         int subResult = mathSubstract.substract(10, 1, 2, 3, 4, 5);
-        System.out.println("10 - 1 - 2 - 3 - 4 - 5 = " + subResult);
+        log.log(Level.INFO, "10 - 1 - 2 - 3 - 4 - 5 = {0}", subResult);
 
         int addResult = mathAdd.add(1, 2, 3, 4, 5);
-        System.out.println("1 + 2 + 3 + 4 + 5 = " + addResult);
+        log.log(Level.INFO, "1 + 2 + 3 + 4 + 5 = {0}", addResult);
 
         int multiResult = mathMultiply.multiply(5, 5);
-        System.out.println("5 * 5 = " + multiResult);
+        log.log(Level.INFO, "5 * 5 = {0}", multiResult);
 
         meteor.stop();
     }

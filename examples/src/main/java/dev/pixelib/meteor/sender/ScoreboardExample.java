@@ -2,10 +2,13 @@ package dev.pixelib.meteor.sender;
 
 import dev.pixelib.meteor.base.defaults.LoopbackTransport;
 import dev.pixelib.meteor.core.Meteor;
+import lombok.extern.java.Log;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
+@Log
 public class ScoreboardExample {
 
     public static void main(String[] args) throws Exception{
@@ -19,10 +22,10 @@ public class ScoreboardExample {
         scoreboard.setScoreForPlayer("player3", 30);
 
         Map<String, Integer> scores = scoreboard.getAllScores();
-        System.out.println("scores: " + scores);
+        log.log(Level.INFO, "scores: {0}", scores);
 
         int player1Score = scoreboard.getScoreForPlayer("player1");
-        System.out.println("player1 score: " + player1Score);
+        log.log(Level.INFO, "player1 score: {0}", player1Score);
 
         meteor.stop();
     }
